@@ -1254,7 +1254,12 @@ try { tg.BackButton.onClick(back); } catch (e) {}
   const v = await kv.get('stats');
   if (v) { try { S = Object.assign(S, JSON.parse(v)); } catch (e) {} }
   stats();
-  if (await kv.get(ONB)) home(); else show('intro');
+  // кнопки меню в чате открывают приложение с ?s=раздел; новичок сначала видит приветствие
+  const goto = {play: () => openPlay(), puzzles, lessons: lessonList, openings: openingList, top: openTop, pro: () => openPro()};
+  const s = new URLSearchParams(location.search).get('s');
+  if (!await kv.get(ONB)) show('intro');
+  else if (Object.prototype.hasOwnProperty.call(goto, s)) { home(); goto[s](); }
+  else home();
   if (API_URL) api('top').then(d => { sync(d.me); showAccess(d.access); }).catch(() => {});
 })();
 
