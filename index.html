@@ -7,7 +7,7 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <style>
-:root{--bg:var(--tg-theme-bg-color,#f6f7fb);--tx:var(--tg-theme-text-color,#14161f);--hint:var(--tg-theme-hint-color,#7a8094);--btn:var(--tg-theme-button-color,#5b5ce2);--btx:var(--tg-theme-button-text-color,#fff);--sec:var(--tg-theme-secondary-bg-color,#fff);--w:min(calc(100vw - 24px),440px);--bs:min(calc(100vw - 24px),440px,max(260px,calc(100vh - 330px)))}
+:root{--bg:#171b24;--tx:#eef1f6;--hint:#93a0b5;--btn:#f2a93b;--btx:#241703;--sec:#232a37;--edge:#161b25;--w:min(calc(100vw - 24px),440px);--bs:min(calc(100vw - 24px),440px,max(260px,calc(100vh - 390px)))}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;padding:12px;background:var(--bg);color:var(--tx);font-family:system-ui,sans-serif;display:flex;justify-content:center}
 [hidden]{display:none!important}
@@ -97,6 +97,32 @@ button:disabled{opacity:.45}
 #promo{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9}
 #promo .box{width:var(--w)}
 #promo button{font-size:36px;padding:8px}
+/* тема */
+html{background:var(--bg);color-scheme:dark}
+body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+button{box-shadow:0 4px 0 #b9761a}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 #b9761a}
+.alt{box-shadow:0 4px 0 var(--edge)}.alt:active{box-shadow:0 1px 0 var(--edge)}
+.hero{background:linear-gradient(150deg,#263652,#1f6f6a);box-shadow:0 5px 0 var(--edge);border-radius:18px}
+.stat,.box,.acc,.pill,.player i{box-shadow:none}
+.card i,.card.g i,.card.o i{background:#2f3a4d;color:var(--btn);border-radius:12px}
+.big{display:flex;align-items:center;justify-content:center;gap:10px;padding:20px;font-size:20px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
+.grid .card{flex-direction:column;text-align:center;gap:8px;padding:14px 8px}
+.rhead,.sheet .rhead{background:linear-gradient(150deg,#263652,#1f6f6a)}
+.l{background:#e9dfc8}.d{background:#5d7791}
+.board{border-radius:6px}
+.last{box-shadow:inset 0 0 0 100px rgba(242,169,59,.42)}
+.sel{background:#f2c463!important}
+#rring{background:conic-gradient(#2fbf8f var(--p,0%),rgba(128,128,128,.22) 0)}
+#rkinds{grid-template-columns:repeat(3,1fr)}
+.kind{box-shadow:none}
+.badge{position:absolute;right:0;top:0;width:44%;height:44%;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font:800 calc(var(--bs)/8*.22) system-ui;border:1px solid #fff;z-index:1}
+.lead{display:flex;gap:12px}.lead span:last-child{margin-left:auto}.lead.you{outline:2px solid var(--btn)}
+#nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;background:#10131a;padding:4px 4px calc(4px + env(safe-area-inset-bottom));z-index:5}
+#nav button{max-width:96px;background:none;color:var(--hint);box-shadow:none;padding:6px 0;font-size:11px}
+#nav button i{display:block;font-style:normal;font-size:23px;line-height:1.2}
+#nav button.on{color:var(--btn)}
 </style>
 </head>
 <body>
@@ -113,17 +139,19 @@ button:disabled{opacity:.45}
     <div class="stat"><b id="hs">0</b><span>решено</span></div>
     <div class="stat"><b id="hw">0</b><span>побед над ботом</span></div>
   </div>
-  <button class="alt card" id="mPuz"><i>♜</i><div>Решать задачи<small>Найди лучший ход и подними рейтинг</small></div></button>
-  <button class="alt card g" id="mPlay"><i>♚</i><div>Играть<small>Партия с ботом, три уровня</small></div></button>
-  <button class="alt card o" id="mLes"><i>♝</i><div>Уроки<small id="lesCount">Все правила с интерактивной доской</small></div></button>
-  <button class="alt card g" id="mTop" hidden><i>🏆</i><div>Таблица лидеров<small>Лучшие решатели задач</small></div></button>
-  <button class="alt card o" id="mPro"><i>⭐</i><div>Подписка<small id="proState">Задачи, дебюты и анализ партий</small></div></button>
-  <button class="alt card" id="mOpen"><i>♛</i><div>Дебюты<small>20 начал по подписке</small></div></button>
-  <button class="alt card" id="mPriv" hidden><i>🔒</i><div>Конфиденциальность<small>Видимость в таблице лидеров</small></div></button>
+  <button class="big" id="mPlay">♟ Играть</button>
+  <div class="grid">
+    <button class="alt card" id="mPuz"><i>♜</i><div>Задачи<small>Найди лучший ход</small></div></button>
+    <button class="alt card" id="mLes"><i>♝</i><div>Уроки<small id="lesCount">Все правила</small></div></button>
+    <button class="alt card" id="mOpen"><i>♛</i><div>Дебюты<small>Дебюты и гамбиты</small></div></button>
+    <button class="alt card" id="mTop" hidden><i>🏆</i><div>Лидеры<small>10 лучших</small></div></button>
+  </div>
 </div>
 
 <div id="openings" class="screen" hidden>
-  <div class="top"><button class="alt back">←</button><h2>Дебюты</h2></div>
+  <div class="top"><button class="alt back">←</button><h2>Начала партий</h2></div>
+  <div class="row seg" id="okind"><button data-k="0">♟ Дебюты</button><button class="alt" data-k="1">⚔️ Гамбиты</button></div>
+  <p id="oabout" class="box"></p>
   <div id="olist" class="screen"></div>
 </div>
 
@@ -138,26 +166,11 @@ button:disabled{opacity:.45}
   <p id="oinfo" class="box"></p>
 </div>
 
-<div id="pro" class="screen" hidden>
-  <div class="top"><button class="alt back">←</button><h2>Подписка</h2></div>
-  <div class="hero"><div class="logo">⭐</div><h1>Шахматы Плюс</h1><p id="pwhy"></p></div>
-  <p class="box">♜ Расширенный лимит задач: без ограничений
-♛ Обучение дебютам: планы за белых и чёрных
-📊 Анализ партий: ошибки и лучшие ходы</p>
-  <p id="pterms" class="box muted"></p>
-  <button id="buyWeek" hidden></button>
-  <button id="buy" hidden></button>
-  <div id="pstat" class="status"></div>
-</div>
-
-<div id="privacy" class="screen" hidden>
-  <div class="top"><button class="alt back">←</button><h2>Конфиденциальность</h2></div>
-  <p class="box">Как показывать тебя в таблице лидеров?</p>
-  <button class="alt" data-board="0">👤 С моим именем</button>
-  <button class="alt" data-board="1">🕶 Анонимно</button>
-  <button class="alt" data-board="2">🚫 Не показывать</button>
-  <div id="vstat" class="status"></div>
-  <p class="box muted">Сервер хранит твой Telegram ID, имя, рейтинг, статистику задач, подписку и платежи.</p>
+<div id="lock" class="screen" hidden>
+  <div class="top"><button class="alt back">←</button><h2>Закрыто</h2></div>
+  <div class="hero"><div class="logo">🔒</div><p id="lwhy"></p></div>
+  <p class="box">Подписка оформляется в чате с ботом.</p>
+  <button id="tobot">Перейти в бота</button>
 </div>
 
 <div id="leaders" class="screen" hidden>
@@ -219,8 +232,8 @@ button:disabled{opacity:.45}
       <button class="alt" id="rclose" aria-label="Закрыть">✕</button>
     </div>
     <div class="rscroll">
-      <div id="rload"><div class="spin">♞</div><p id="rstat" class="status"></p><div class="bar"><div id="rbar"></div></div></div>
-      <div id="rlock" hidden><div class="spin" style="animation:none">📊</div><p id="rwhy" class="status"></p><button id="rpro">⭐ Оформить подписку</button></div>
+      <div id="rload"><div class="spin">♞</div><p id="rstat" class="status"></p><div class="bar"><div id="rbar"></div></div><button class="alt" id="rretry" hidden>↻ Повторить</button></div>
+      <div id="rlock" hidden><div class="spin" style="animation:none">📊</div><p id="rwhy" class="status"></p><button id="rpro">Перейти в бота</button></div>
       <div id="rbody">
         <div class="acc"><div id="rring"><b id="racc"></b></div><div><b>Точность твоей игры</b><p id="rnote" class="muted"></p></div></div>
         <div id="rkinds"></div>
@@ -229,7 +242,6 @@ button:disabled{opacity:.45}
         <div id="rtext"></div>
         <div class="row"><button class="alt" id="rprev">◀ Назад</button><button class="alt" id="rnext">Дальше ▶</button></div>
         <div id="rmoves"></div>
-        <button class="alt" id="rretry" hidden>↻ Повторить с сильным движком</button>
       </div>
     </div>
     <div class="rfoot"><button id="rnew">♟ Начать новую партию</button></div>
@@ -238,10 +250,21 @@ button:disabled{opacity:.45}
 
 <div id="promo" hidden><div class="box"><p class="status">В кого превратить пешку?</p><div class="row"></div></div></div>
 
+<nav id="nav" hidden>
+  <button data-n="home"><i>⌂</i>Главная</button>
+  <button data-n="app"><i>♜</i>Задачи</button>
+  <button data-n="play"><i>♟</i>Играть</button>
+  <button data-n="lessons"><i>♝</i>Уроки</button>
+  <button data-n="openings"><i>♛</i>Дебюты</button>
+</nav>
+
 <script>
 const tg = window.Telegram && Telegram.WebApp;
-if (tg) { tg.ready(); tg.expand(); }
-if (!window.Chess) alert('Не загрузилась библиотека chess.js, проверь интернет');
+if (tg) {
+  tg.ready(); tg.expand();
+  try { tg.setHeaderColor('#171b24'); tg.setBackgroundColor('#171b24'); } catch (e) {}
+}
+if (!window.Chess) alert('Игра не загрузилась, проверь интернет');
 
 // sol: ходы решения в UCI. Нечётные (1-й, 3-й...) ходит игрок, чётные отвечает соперник.
 // Любой ход, ставящий мат, тоже засчитывается.
@@ -266,7 +289,7 @@ let ptoken = 0, loading = false; // загрузка задач Lichess
 // ---- Сервер ----
 // Вставь адрес своего Worker без / на конце, например 'https://chess.login.workers.dev'.
 // Пока пусто, приложение работает как раньше: задачи проверяются на телефоне.
-const API_URL = 'https://chess-server.lasimz659.workers.dev';
+const API_URL = location.protocol.startsWith('http') ? location.origin : ''; // приложение и сервер на одном адресе
 async function api(path, body) {
   if (!tg || !tg.initData) throw new Error('no telegram');
   const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 10000);
@@ -282,7 +305,7 @@ function sync(m) { Object.assign(S, m); save(); stats(); $('hr').textContent = S
 function apiError(e) {
   if (e.message === 'no telegram') return 'Открой приложение через кнопку меню бота в Telegram';
   if (e.message === '401') return 'Сессия устарела: закрой и открой приложение заново';
-  return 'Нет связи с сервером, попробуй ещё раз';
+  return 'Нет связи, попробуй ещё раз';
 }
 
 // Хранилище: Telegram CloudStorage, а вне Telegram localStorage
@@ -392,7 +415,7 @@ async function serverNext(skip) {
     const d = await api(id ? 'skip' : 'puzzle', {id});
     if (token !== ptoken) return;
     loading = false; sync(d.me); showAccess(d.access);
-    if (d.limit) { P = null; if (!$('app').hidden) openPro('Бесплатные задачи на сегодня закончились. Новые появятся в 00:00 по Москве.'); return; }
+    if (d.limit) { P = null; if (!$('app').hidden) openLock('Бесплатные задачи на сегодня закончились. Новые появятся в 00:00 по Москве.'); return; }
     P = d.puzzle; showPuzzle();
   } catch (e) {
     if (token !== ptoken) return;
@@ -507,11 +530,13 @@ $('skip').addEventListener('click', () => {
 
 // ---- Навигация ----
 const ONB = 'onboarded2'; // чтобы показать приветствие всем заново, смени на 'onboarded3'
-const SCREENS = ['intro', 'home', 'lessons', 'lesson', 'offer', 'app', 'play', 'openings', 'opening', 'leaders', 'pro', 'privacy'];
+const SCREENS = ['intro', 'home', 'lessons', 'lesson', 'offer', 'app', 'play', 'openings', 'opening', 'leaders', 'lock'];
 function show(id) {
   closeReview();
   SCREENS.forEach(x => { $(x).hidden = x !== id; });
   $('promo').hidden = true;
+  $('nav').hidden = !['home', 'app', 'play', 'lessons', 'openings', 'leaders'].includes(id);
+  [...$('nav').children].forEach(b => b.classList.toggle('on', b.dataset.n === id));
   window.scrollTo(0, 0);
   try { if (id === 'home' || id === 'intro') tg.BackButton.hide(); else tg.BackButton.show(); } catch (e) {}
 }
@@ -857,13 +882,13 @@ $('resign').addEventListener('click', () => {
 });
 
 // ---- Отчёт о партии ----
-// Stockfish: сначала файл stockfish.js рядом с приложением (если его загрузили), потом две публичные копии.
-// Если ничего не загрузилось, считает простой встроенный движок.
+// Stockfish 19: /engine.js отдаёт сервер приложения, вторая ссылка запасная.
+const CDN = 'https://cdn.jsdelivr.net/npm/stockfish@19.0.1/bin/stockfish-19-lite-single.';
 const SF_URLS = [
-  './stockfish.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js',
-  'https://cdn.jsdelivr.net/npm/stockfish.js@10.0.2/stockfish.js'
+  () => new Worker('/engine.js'),
+  () => new Worker(URL.createObjectURL(new Blob([`importScripts('${CDN}js')`], {type: 'text/javascript'})) + '#' + encodeURIComponent(CDN + 'wasm'))
 ];
+const THINK = 800; // миллисекунд на позицию
 let sf = null, sfLoading = null;
 function ask(worker, cmds, until, ms) {
   return new Promise((res, rej) => {
@@ -871,8 +896,10 @@ function ask(worker, cmds, until, ms) {
     const timer = setTimeout(() => rej(new Error('timeout')), ms);
     worker.onerror = e => { e.preventDefault(); clearTimeout(timer); rej(new Error('worker')); };
     worker.onmessage = e => {
-      const line = String(e.data); lines.push(line);
-      if (line.startsWith(until)) { clearTimeout(timer); res(lines); }
+      for (const line of String(e.data).split('\n')) {
+        lines.push(line);
+        if (line.startsWith(until)) { clearTimeout(timer); res(lines); }
+      }
     };
     cmds.forEach(c => worker.postMessage(c));
   });
@@ -880,15 +907,14 @@ function ask(worker, cmds, until, ms) {
 function loadEngine() {
   if (sf) return Promise.resolve(sf);
   return sfLoading || (sfLoading = (async () => {
-    for (const url of SF_URLS) {
+    for (const make of SF_URLS) {
       let w;
       try {
-        w = new Worker(url.startsWith('./') ? url
-          : URL.createObjectURL(new Blob([`importScripts('${url}')`], {type: 'text/javascript'})));
-        await ask(w, ['uci'], 'uciok', 40000); // на телефоне первая загрузка бывает долгой
-        await ask(w, ['isready'], 'readyok', 20000);
+        w = make();
+        await ask(w, ['uci'], 'uciok', 30000); // на телефоне первая загрузка бывает долгой
+        await ask(w, ['setoption name Hash value 32', 'isready'], 'readyok', 20000);
         return sf = w;
-      } catch (e) { if (w) w.terminate(); console.log('Stockfish', url, e.message); }
+      } catch (e) { if (w) w.terminate(); console.log('engine', e.message); }
     }
     return null;
   })().finally(() => { sfLoading = null; }));
@@ -897,29 +923,18 @@ function loadEngine() {
 async function analyse(g, engine) {
   if (g.in_checkmate()) return {score: -10000};
   if (g.game_over()) return {score: 0};
-  if (engine) {
-    // ограничение по времени, чтобы отчёт не зависал на слабых телефонах
-    const lines = await ask(engine, ['position fen ' + g.fen(), 'go movetime 350'], 'bestmove', 15000);
-    let score = 0;
-    for (const l of lines) {
-      const m = / score (cp|mate) (-?\d+)/.exec(l);
-      if (m && !/bound/.test(l)) score = m[1] === 'cp' ? +m[2] : (+m[2] > 0 ? 10000 : -10000);
-    }
-    return {score, best: lines[lines.length - 1].split(' ')[1]};
+  const lines = await ask(engine, ['position fen ' + g.fen(), 'go movetime ' + THINK], 'bestmove', 20000);
+  let score = 0;
+  for (const l of lines) {
+    const m = / score (cp|mate) (-?\d+)/.exec(l);
+    if (m && !/bound/.test(l)) score = m[1] === 'cp' ? +m[2] : (+m[2] > 0 ? 10000 : -10000);
   }
-  let score = -Infinity, best;
-  for (const m of order(g.moves({verbose: true}))) {
-    g.move(m);
-    const v = -search(g, 1, -Infinity, -score, m);
-    g.undo();
-    if (v > score) { score = v; best = m.from + m.to + (m.promotion || ''); }
-  }
-  return {score, best};
+  return {score, best: lines[lines.length - 1].split(' ')[1]};
 }
 // значок, название, цвет
 const KINDS = {
-  best: ['★', 'Лучший', '#16a979'], good: ['✓', 'Хороший', '#5b9bd5'], soft: ['?!', 'Неточность', '#e6b422'],
-  bad: ['?', 'Ошибка', '#f08a24'], blunder: ['??', 'Зевок', '#e5484d']
+  best: ['★', 'Лучший', '#2fbf8f'], great: ['!', 'Отличный', '#35a7c9'], good: ['✓', 'Хороший', '#8aa0b8'],
+  soft: ['?!', 'Неточность', '#f2c14e'], bad: ['?', 'Ошибка', '#f0883a'], blunder: ['??', 'Зевок', '#ef5350']
 };
 const NAMES = {p:'пешку', n:'коня', b:'слона', r:'ладью', q:'ферзя'};
 // шансы на победу в процентах по оценке позиции
@@ -956,9 +971,9 @@ async function openReview() {
   $('review').hidden = false; document.body.style.overflow = 'hidden';
   const token = ++rtoken;
   $('rlock').hidden = true;
+  const wait = text => { $('rload').hidden = false; $('rbody').hidden = true; $('rretry').hidden = true; $('rbar').style.width = '0'; $('rstat').textContent = text; };
   if (API_URL && !(acc && acc.pro && acc.until * 1000 > Date.now())) { // анализ входит в подписку
-    $('rload').hidden = false; $('rbody').hidden = true; $('rbar').style.width = '0';
-    $('rstat').textContent = 'Проверяю подписку…';
+    wait('Готовлю отчёт…');
     let why = 'Анализ партии доступен по подписке: ошибки, лучшие ходы и точность игры.', pro = false;
     try { const d = await api('top'); if (token !== rtoken) return; sync(d.me); showAccess(d.access); pro = d.access.pro; }
     catch (e) { why = apiError(e); }
@@ -969,31 +984,36 @@ async function openReview() {
   $('rload').hidden = ready; $('rbody').hidden = !ready;
   if (ready) return rdraw();
   const history = G.history({verbose: true});
-  analysing = true; $('rbar').style.width = '0';
-  $('rstat').textContent = 'Загружаю движок… В первый раз это может занять до минуты';
-  let engine = await loadEngine();
+  analysing = true; $('rbar').style.width = '0'; $('rretry').hidden = true;
+  $('rstat').textContent = 'Готовлю отчёт… В первый раз это дольше';
+  const failed = () => {
+    analysing = false; $('rstat').textContent = 'Не получилось разобрать партию. Проверь интернет и повтори.';
+    $('rretry').hidden = false;
+  };
+  const engine = await loadEngine();
   if (token !== rtoken) return;
+  if (!engine) return failed();
   const positions = [new Chess()];
   for (const m of history) {
     const g = new Chess(positions[positions.length - 1].fen());
     g.move({from: m.from, to: m.to, promotion: m.promotion});
     positions.push(g);
   }
-  if (engine) engine.postMessage('ucinewgame');
   const evals = [];
-  for (let i = 0; i < positions.length; i++) {
-    $('rstat').textContent = `Разбираю партию: ${i + 1} из ${positions.length}`;
-    $('rbar').style.width = (i + 1) / positions.length * 100 + '%';
-    await new Promise(r => setTimeout(r, 20));
-    if (token !== rtoken) return;
-    try { evals.push(await analyse(new Chess(positions[i].fen()), engine)); }
-    catch (e) { // движок завис: пересчитываем всё простым, чтобы оценки были сравнимы
+  try {
+    await ask(engine, ['ucinewgame', 'isready'], 'readyok', 20000);
+    for (let i = 0; i < positions.length; i++) {
       if (token !== rtoken) return;
-      if (sf) sf.terminate();
-      sf = engine = null; evals.length = 0; i = -1;
+      $('rstat').textContent = `Разбираю партию: ${i + 1} из ${positions.length}`;
+      $('rbar').style.width = (i + 1) / positions.length * 100 + '%';
+      evals.push(await analyse(new Chess(positions[i].fen()), engine));
     }
+  } catch (e) {
     if (token !== rtoken) return;
+    engine.terminate(); sf = null;
+    return failed();
   }
+  if (token !== rtoken) return;
   items = [];
   history.forEach((m, i) => {
     if (m.color !== 'w') return; // разбираем ходы игрока
@@ -1002,11 +1022,12 @@ async function openReview() {
     const mine = after.in_checkmate() ? 10000 : -evals[i + 1].score;
     const drop = Math.max(0, chance(evals[i].score) - chance(mine));
     const isBest = after.in_checkmate() || (best && best.from === m.from && best.to === m.to && best.promotion === m.promotion);
-    const kind = isBest ? 'best' : drop < 5 ? 'good' : drop < 10 ? 'soft' : drop < 20 ? 'bad' : 'blunder';
+    const kind = isBest ? 'best' : drop < 2 ? 'great' : drop < 5 ? 'good' : drop < 10 ? 'soft' : drop < 20 ? 'bad' : 'blunder';
     const acc = isBest ? 100 : Math.max(0, Math.min(100, 103.17 * Math.exp(-0.04354 * drop) - 3.17));
     const why = [];
     if (after.in_checkmate()) why.push('Это мат!');
     else if (kind === 'best') why.push(m.captured ? `Ты взял ${NAMES[m.captured]}, и это сильнейший ход.` : 'Сильнейший ход в этой позиции.');
+    else if (kind === 'great') why.push('Отличный ход, почти не уступает лучшему.');
     else if (kind === 'good') why.push('Крепкий ход, позиция почти не ухудшилась.');
     else {
       if (evals[i].score >= 9000 && mine < 9000) why.push('Здесь был форсированный мат, и он упущен.');
@@ -1015,23 +1036,23 @@ async function openReview() {
       if (best && best.captured) why.push(`Можно было взять ${NAMES[best.captured]} на ${best.to}.`);
     }
     if (best && !isBest) why.push(`Сильнее: ${ru(best.san)} (зелёная стрелка).`);
-    items.push({fen: before.fen(), move: m, best: isBest ? null : best, kind, acc, ply: i, num: Math.floor(i / 2) + 1, why: why.join('\n')});
+    items.push({score: after.in_checkmate() ? null : evals[i + 1].score, fen: before.fen(), move: m, best: isBest ? null : best, kind, acc, ply: i, num: Math.floor(i / 2) + 1, why: why.join('\n')});
   });
   // шансы белых после каждого полухода для графика
   graph = positions.map((p, i) => chance(p.turn() === 'w' ? evals[i].score : -evals[i].score));
   analysing = false; doneKey = key;
-  summary(!!engine);
+  summary();
   $('rload').hidden = true; $('rbody').hidden = false;
   // начинаем с первой ошибки
   ri = Math.max(0, items.findIndex(x => x.kind === 'bad' || x.kind === 'blunder'));
   rdraw();
 }
-function summary(strong) {
+function summary() {
   const acc = items.length ? Math.round(items.reduce((n, x) => n + x.acc, 0) / items.length) : 0;
   $('racc').textContent = items.length ? acc + '%' : '—';
   $('rring').style.setProperty('--p', acc + '%');
-  $('rnote').textContent = strong ? 'Анализ: Stockfish' : 'Сильный движок не загрузился: оценки упрощённые и могут быть неточными';
-  $('rretry').hidden = strong;
+  $('rnote').textContent = `Лучших и отличных ходов: ${items.filter(x => x.kind === 'best' || x.kind === 'great').length} из ${items.length}`;
+  $('rretry').hidden = true;
   $('rkinds').innerHTML = Object.entries(KINDS).map(([k, v]) =>
     `<button class="kind" data-k="${k}" style="--c:${v[2]}"><b>${items.filter(x => x.kind === k).length}</b><span>${v[1]}</span></button>`).join('');
   $('rmoves').innerHTML = items.map((x, i) =>
@@ -1061,8 +1082,13 @@ function rdraw() {
   $('rb').insertAdjacentHTML('beforeend', `<svg class="arrows" viewBox="0 0 8 8">${arrow(x.move, kind[2])}${x.best ? arrow(x.best, '#15a34a') : ''}</svg>`);
   $('rtext').style.setProperty('--c', kind[2]);
   $('rtext').textContent = x.why;
+  // значок оценки на клетке, куда сделан ход
+  const cell = $('rb').querySelector(`[data-sq=${x.move.to}]`);
+  if (cell) cell.insertAdjacentHTML('beforeend', `<em class="badge" style="background:${kind[2]}">${kind[0]}</em>`);
+  // оценка после хода, с точки зрения белых (счёт движка дан для чёрных)
+  const s = x.score === null ? '' : Math.abs(x.score) >= 9000 ? (x.score < 0 ? ' · мат за тебя' : ' · мат за бота') : ' · оценка ' + (-x.score > 0 ? '+' : '') + (-x.score / 100).toFixed(1);
   const head = document.createElement('b');
-  head.textContent = `${x.num}. ${ru(x.move.san)} ${kind[0]} ${kind[1]}`;
+  head.textContent = `${x.num}. ${ru(x.move.san)} ${kind[0]} ${kind[1]}${s}`;
   $('rtext').prepend(head);
   $('rprev').disabled = ri === 0; $('rnext').disabled = ri === items.length - 1;
   [...$('rmoves').children].forEach((b, i) => { b.className = i === ri ? '' : 'alt'; });
@@ -1102,17 +1128,30 @@ async function openingList() {
       const d = await api('openings');
       showAccess(d.access);
       if ($('openings').hidden) return;
-      if (!d.openings) return openPro('Раздел «Дебюты» открывается по подписке.');
+      if (!d.openings) return openLock('Начала партий открываются по подписке.');
       OPENINGS = d.openings;
     } catch (e) { $('olist').textContent = apiError(e); return; }
   }
+  show('openings'); drawOpenings();
+}
+const ABOUT = [
+  'Дебют: начало партии, где обе стороны выводят фигуры, борются за центр и прячут короля, обычно без жертв. Цель: удобная и надёжная позиция.',
+  'Гамбит: вид дебюта, в котором одна сторона нарочно отдаёт материал (чаще пешку), чтобы получить быстрое развитие, центр или атаку. Играть острее: если инициатива пропадёт, останется нехватка материала. «Отказанный» значит, что соперник жертву не принял.'
+];
+let okind = 0;
+function drawOpenings() {
+  [...$('okind').children].forEach((b, i) => { b.className = i === okind ? '' : 'alt'; });
+  $('oabout').textContent = ABOUT[okind];
+  const order = ['1.e4 e5', '1.e4', '1.d4', 'Фланговые'];
+  const list = OPENINGS.map((o, i) => [o, i]).filter(([o]) => /гамбит/i.test(o[1]) === !!okind)
+    .sort((a, b) => order.indexOf(a[0][0]) - order.indexOf(b[0][0]) || a[1] - b[1]);
   let group = '';
-  $('olist').innerHTML = OPENINGS.map((o, i) => {
+  $('olist').innerHTML = list.map(([o, i]) => {
     const head = o[0] !== group ? `<div class="grp">${group = o[0]}</div>` : '';
     return head + `<button class="alt card" data-i="${i}"><i>${o[2] === 'w' ? '♔' : '♚'}</i><div>${o[1]}<small>${o[2] === 'w' ? 'Выбирают белые' : 'Выбирают чёрные'}</small></div><em>${S.open[i] ? '✅' : '›'}</em></button>`;
   }).join('');
-  show('openings');
 }
+$('okind').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { okind = +b.dataset.k; drawOpenings(); } });
 function openOpening(i) {
   oi = i; omoves = OPENINGS[i][3].split(' '); oflip = OPENINGS[i][2] === 'b'; otab = 0;
   $('ot').textContent = OPENINGS[i][1];
@@ -1184,82 +1223,21 @@ $('otw').addEventListener('click', () => train('w'));
 $('otb').addEventListener('click', () => train('b'));
 $('mOpen').addEventListener('click', openingList);
 
-// ---- Подписка ----
-// Доступ выдаёт и проверяет только сервер, здесь лишь отображение
-let acc = null, paying = false;
-const dateRu = t => new Date(t * 1000).toLocaleDateString('ru-RU');
+// ---- Доступ ----
+// Доступ выдаёт и проверяет только сервер. Подписка, поддержка и настройки живут в боте.
+let acc = null;
 function showAccess(a) {
   if (!a) return;
   acc = a;
-  $('proState').textContent = a.pro ? 'Активна до ' + dateRu(a.until) : 'Задачи, дебюты и анализ партий';
   $('quota').textContent = a.pro ? '' : 'Бесплатных новых задач сегодня: ' + a.left + ' из ' + a.limit;
-  drawPro();
 }
-function drawPro() {
-  if (!acc) return;
-  $('pterms').textContent = `7 дней: ${acc.week} ⭐, разовая оплата. 30 дней: ${acc.price} ⭐, продлевается автоматически, отменить можно в Telegram в разделе своих звёзд. Вопросы по оплате: кнопка «Поддержка» в меню бота. Нажимая кнопку оплаты, ты принимаешь эти условия.`;
-  $('buy').hidden = $('buyWeek').hidden = acc.pro;
-  $('buyWeek').textContent = `7 дней за ${acc.week} ⭐`;
-  $('buy').textContent = `30 дней за ${acc.price} ⭐`;
-  if (acc.pro) $('pstat').textContent = '✅ Подписка активна до ' + dateRu(acc.until);
+function openLock(why) { show('lock'); $('lwhy').textContent = why; }
+async function toBot() {
+  try { await api('subpage'); } catch (e) {} // меню бота доступно и без этого сообщения
+  try { tg.close(); } catch (e) {}
 }
-async function openPro(why) {
-  show('pro');
-  $('pwhy').textContent = why || 'Больше задач, дебюты и анализ партий';
-  $('pstat').textContent = ''; drawPro();
-  try { const d = await api('top'); sync(d.me); showAccess(d.access); }
-  catch (e) { $('pstat').textContent = apiError(e); }
-}
-// после оплаты ждём, пока сервер получит подтверждение от Telegram
-async function waitPaid() {
-  for (let i = 0; i < 10; i++) {
-    $('pstat').textContent = 'Проверяю оплату…';
-    await new Promise(r => setTimeout(r, 1500));
-    try { const d = await api('top'); showAccess(d.access); if (d.access.pro) return; } catch (e) {}
-  }
-  $('pstat').textContent = 'Оплата ещё обрабатывается. Зайди сюда через минуту; если доступ не появился, напиши /paysupport боту.';
-}
-async function buy(plan) {
-  if (paying) return;
-  if (!tg || !tg.openInvoice || !tg.isVersionAtLeast('6.1')) return void ($('pstat').textContent = 'Обнови Telegram и открой приложение через бота');
-  paying = true; $('buy').disabled = $('buyWeek').disabled = true; $('pstat').textContent = 'Готовлю счёт…';
-  const free = () => { paying = false; $('buy').disabled = $('buyWeek').disabled = false; };
-  try {
-    const d = await api('invoice', {plan});
-    showAccess(d.access);
-    if (!d.link) return free();
-    $('pstat').textContent = '';
-    free();
-    tg.openInvoice(d.link, status => {
-      if (status === 'paid' || status === 'pending') waitPaid();
-      else if (status === 'failed') $('pstat').textContent = 'Оплата не прошла';
-    });
-  } catch (e) { free(); $('pstat').textContent = apiError(e); }
-}
-$('buy').addEventListener('click', () => buy('month'));
-$('buyWeek').addEventListener('click', () => buy('week'));
-$('rpro').addEventListener('click', () => openPro('Анализ партий открывается по подписке.'));
-$('mPro').addEventListener('click', () => openPro());
-
-// ---- Конфиденциальность ----
-let vbusy = false;
-async function privacy(value) {
-  if (vbusy) return;
-  vbusy = true; $('vstat').textContent = value === undefined ? 'Загружаю…' : 'Сохраняю…';
-  try {
-    const d = await api('privacy', {board: value});
-    showAccess(d.access);
-    document.querySelectorAll('[data-board]').forEach(b => {
-      const on = +b.dataset.board === d.board;
-      b.classList.toggle('alt', !on); b.setAttribute('aria-pressed', on);
-    });
-    $('vstat').textContent = value === undefined ? '' : '✅ Сохранено';
-  } catch (e) { $('vstat').textContent = apiError(e); }
-  vbusy = false;
-}
-$('mPriv').addEventListener('click', () => { show('privacy'); privacy(); });
-$('mPriv').hidden = !API_URL;
-document.querySelectorAll('[data-board]').forEach(b => b.addEventListener('click', () => privacy(+b.dataset.board)));
+$('tobot').addEventListener('click', toBot);
+$('rpro').addEventListener('click', toBot);
 
 // ---- Таблица лидеров ----
 let ttoken = 0;
@@ -1270,7 +1248,7 @@ async function openTop() {
     const d = await api('top');
     if (token !== ttoken) return;
     sync(d.me); showAccess(d.access);
-    $('tstat').textContent = d.board === 2 ? 'Ты скрыт из таблицы. Изменить: раздел «Конфиденциальность»' : d.place ? `Твоё место: ${d.place}` : 'Реши задачу без ошибок, чтобы попасть в таблицу';
+    $('tstat').textContent = d.board === 2 ? 'Ты скрыт из таблицы. Изменить можно в боте' : d.place ? `Твоё место: ${d.place}` : 'Реши задачу без ошибок, чтобы попасть в таблицу';
     d.top.forEach((x, i) => {
       const row = document.createElement('div');
       row.className = 'box lead' + (x.you ? ' you' : '');
@@ -1293,6 +1271,12 @@ $('no').addEventListener('click', home);
 $('mPuz').addEventListener('click', puzzles);
 $('mPlay').addEventListener('click', () => openPlay());
 $('mLes').addEventListener('click', lessonList);
+$('nav').addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  clearTimeout(ttimer); clearTimeout(otimer);
+  ({home, app: puzzles, play: () => openPlay(), lessons: lessonList, openings: openingList})[b.dataset.n]();
+});
 function back() {
   clearTimeout(ttimer); clearTimeout(otimer);
   if (!$('opening').hidden) return openingList();
@@ -1306,7 +1290,7 @@ try { tg.BackButton.onClick(back); } catch (e) {}
   if (v) { try { S = Object.assign(S, JSON.parse(v)); } catch (e) {} }
   stats();
   // кнопки меню в чате открывают приложение с ?s=раздел; новичок сначала видит приветствие
-  const goto = {play: () => openPlay(), puzzles, lessons: lessonList, openings: openingList, top: openTop, pro: () => openPro()};
+  const goto = {play: () => openPlay(), puzzles, lessons: lessonList, openings: openingList, top: openTop};
   const s = new URLSearchParams(location.search).get('s');
   if (!await kv.get(ONB)) show('intro');
   else if (Object.prototype.hasOwnProperty.call(goto, s)) { home(); goto[s](); }
