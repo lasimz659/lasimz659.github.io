@@ -7,156 +7,179 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <style>
-:root{--bg:#171b24;--tx:#eef1f6;--hint:#93a0b5;--btn:#f2a93b;--btx:#241703;--sec:#232a37;--edge:#161b25;--w:min(calc(100vw - 24px),440px);--bs:min(calc(100vw - 24px),440px,max(260px,calc(100vh - 390px)))}
+:root{--bg:#0e1116;--tx:#f1ede4;--hint:#8f95a3;--gold:#d9b46c;--gold2:#f0d79c;--btx:#1d1508;--sec:#181d26;--line:rgba(255,255,255,.075);--btn:var(--gold);
+--serif:ui-serif,"Noto Serif",Georgia,serif;--w:min(calc(100vw - 28px),440px);--bs:min(calc(100vw - 20px),440px,max(260px,calc(100vh - 390px)))}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;padding:12px;background:var(--bg);color:var(--tx);font-family:system-ui,sans-serif;display:flex;justify-content:center}
-[hidden]{display:none!important}
-.screen{width:var(--w);display:flex;flex-direction:column;align-items:center;gap:12px;animation:in .25s ease}
-@keyframes in{from{opacity:0;transform:translateY(8px)}}
-h1,h2,p{margin:0}
-h1{font-size:28px}h2{font-size:20px}
-p{line-height:1.45;white-space:pre-line}
-.muted{color:var(--hint)}
-.hero{width:100%;border-radius:22px;padding:24px 16px;text-align:center;color:#fff;background:linear-gradient(135deg,#5b5ce2,#8b4fd8 55%,#d9578f);box-shadow:0 10px 26px rgba(91,92,226,.35)}
-.hero .logo{font-size:60px;line-height:1.1}
-.stats{display:flex;gap:8px;width:100%}
-.stat{flex:1;background:var(--sec);border-radius:14px;padding:8px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-.stat b{display:block;font-size:20px}
-.stat span{font-size:12px;color:var(--hint)}
-button{width:100%;padding:14px;border:0;border-radius:14px;background:var(--btn);color:var(--btx);font:600 16px system-ui,sans-serif;cursor:pointer;transition:transform .1s}
-button:active{transform:scale(.97)}
-button:disabled{opacity:.45}
-.alt{background:var(--sec);color:var(--tx);box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.card{display:flex;align-items:center;gap:14px;text-align:left}
-.card i{flex:none;width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:30px;color:#fff;background:linear-gradient(135deg,#5b5ce2,#8b4fd8)}
-.player{display:flex;align-items:center;gap:10px;width:var(--bs);margin:-4px 0}
-.player i{font-style:normal;font-size:22px;width:38px;height:38px;border-radius:12px;background:var(--sec);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.player b{display:block;font-size:14px;line-height:1.2}.player small{color:var(--hint);font-size:12px}
-.player span{margin-left:auto;font-size:17px;letter-spacing:-3px;color:var(--hint)}
-.player em{font:700 12px system-ui;letter-spacing:0;margin-left:8px}
-.pill{width:auto;max-width:100%;padding:7px 16px;border-radius:99px;background:var(--sec);box-shadow:0 2px 8px rgba(0,0,0,.08);font-size:14px}
-.tools button{padding:9px 4px;font-size:13px}.tools i{display:block;font-style:normal;font-size:19px;line-height:1.2}
-#review{position:fixed;inset:0;z-index:8;background:rgba(12,14,24,.62);backdrop-filter:blur(5px);display:flex;align-items:flex-end;justify-content:center}
-.sheet{width:min(100%,480px);max-height:94vh;display:flex;flex-direction:column;background:var(--bg);border-radius:24px 24px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.35);animation:up .3s ease}
-@keyframes up{from{transform:translateY(60px);opacity:0}}
-.rhead{display:flex;align-items:center;gap:10px;padding:16px 16px 12px;color:#fff;border-radius:24px 24px 0 0;background:linear-gradient(135deg,#5b5ce2,#8b4fd8 55%,#d9578f)}
-.rhead div{flex:1}.rhead small{color:rgba(255,255,255,.85)}
-.rhead button{width:38px;height:38px;padding:0;background:rgba(255,255,255,.2);color:#fff;box-shadow:none}
-.rscroll{overflow:auto;padding:14px 16px;min-height:0}
-#rload,#rbody,#rlock{display:flex;flex-direction:column;align-items:center;gap:12px}
-#rlock{padding:24px 0}
-#rload{padding:24px 0}
-.spin{font-size:54px;animation:hop 1s ease-in-out infinite}
-@keyframes hop{50%{transform:translateY(-12px)}}
-.rfoot{padding:10px 16px calc(12px + env(safe-area-inset-bottom))}
-.acc{display:flex;align-items:center;gap:14px;width:100%;background:var(--sec);border-radius:16px;padding:12px;box-shadow:0 2px 10px rgba(0,0,0,.07)}
-.acc p{font-size:13px}
-#rring{flex:none;width:76px;height:76px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:conic-gradient(#16a979 var(--p,0%),rgba(128,128,128,.22) 0)}
-#rring b{width:60px;height:60px;border-radius:50%;background:var(--sec);display:flex;align-items:center;justify-content:center;font-size:19px}
-#rkinds{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;width:100%}
-.kind{border:0;background:var(--sec);border-radius:12px;padding:8px 2px;text-align:center;border-bottom:4px solid var(--c);color:var(--tx);font-weight:500}
-.kind b{display:block;font-size:19px}.kind span{font-size:10px;color:var(--hint);display:block}
-#rgraph{width:100%;height:70px;border-radius:12px;overflow:hidden;background:#3a3d4a}
-#rgraph svg{display:block;width:100%;height:100%}
-#rb{--bs:min(calc(100vw - 32px),380px,48vh)}
-.board{position:relative}
-.arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-#rtext{width:100%;background:var(--sec);border-radius:14px;padding:12px;border-left:6px solid var(--c);white-space:pre-line;line-height:1.45}
-#rtext b{display:block;font-size:17px;color:var(--c)}
-#rmoves{display:flex;gap:6px;width:100%;overflow-x:auto;padding-bottom:4px}
-#rmoves button{flex:none;width:auto;padding:7px 11px;font-size:13px;border-bottom:3px solid var(--c)}
-.grp{width:100%;font-weight:700;color:var(--hint)}
-#om span{display:inline-block;margin-right:8px;color:var(--hint)}
-#om span.on{color:var(--tx);font-weight:700}
-.card.g i{background:linear-gradient(135deg,#16a979,#3bc4a0)}
-.card.o i{background:linear-gradient(135deg,#f08a24,#e8567a)}
-.card small{display:block;font-size:13px;font-weight:500;color:var(--hint);margin-top:2px}
-.card em{margin-left:auto;font-style:normal;color:var(--hint)}
-.top{display:flex;align-items:center;gap:10px;width:100%}
-.top button{width:auto;padding:8px 14px}
-.top h2{flex:1}
-.bar{width:100%;height:6px;border-radius:3px;background:rgba(128,128,128,.2);overflow:hidden}
-.bar div{height:100%;background:var(--btn);transition:width .3s}
-.box{width:100%;background:var(--sec);border-radius:14px;padding:12px}
-.status{width:100%;text-align:center;font-weight:600;min-height:22px}
-.row{display:flex;gap:8px;width:100%}
-.seg button{padding:10px 4px;font-size:14px}
-.board{flex:none;width:var(--bs);height:var(--bs);display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));border-radius:10px;overflow:hidden;font-size:calc(var(--bs)/8*.82);user-select:none;box-shadow:0 8px 22px rgba(0,0,0,.22)}
-.sq{display:flex;align-items:center;justify-content:center;position:relative;line-height:1;min-width:0;min-height:0;overflow:hidden}
-.l{background:#ebecd0}.d{background:#739552}
-.last{box-shadow:inset 0 0 0 100px rgba(255,235,59,.4)}
-.sel{background:#f6f669!important}
-.chk{background:radial-gradient(circle,#ff3b30 30%,#e8867a 75%)!important}
-.dot::after{content:"";position:absolute;width:30%;height:30%;border-radius:50%;background:rgba(0,0,0,.28)}
-.dot.occ::after{width:88%;height:88%;background:none;border:3px solid rgba(0,0,0,.35)}
-.sq[data-f]::before,.sq[data-r] u{font:700 10px system-ui;color:rgba(0,0,0,.5);position:absolute;text-decoration:none}
-.sq[data-f]::before{content:attr(data-f);right:2px;bottom:1px}
-.sq[data-r] u{left:2px;top:1px}
-.w{color:#fff;text-shadow:0 0 2px #000,0 0 2px #000,0 0 3px #000}
-.b{color:#111}
-#promo{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9}
-#promo .box{width:var(--w)}
-#promo button{font-size:36px;padding:8px}
-/* тема */
 html{background:var(--bg);color-scheme:dark}
-body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
-button{box-shadow:0 4px 0 #b9761a}
-button:active{transform:translateY(3px);box-shadow:0 1px 0 #b9761a}
-.alt{box-shadow:0 4px 0 var(--edge)}.alt:active{box-shadow:0 1px 0 var(--edge)}
-.hero{background:linear-gradient(150deg,#263652,#1f6f6a);box-shadow:0 5px 0 var(--edge);border-radius:18px}
-.stat,.box,.acc,.pill,.player i{box-shadow:none}
-.card i,.card.g i,.card.o i{background:#2f3a4d;color:var(--btn);border-radius:12px}
-.big{display:flex;align-items:center;justify-content:center;gap:10px;padding:20px;font-size:20px}
+body{margin:0;padding:14px 14px calc(96px + env(safe-area-inset-bottom));min-height:100vh;color:var(--tx);font-family:system-ui,sans-serif;display:flex;justify-content:center;align-items:flex-start;
+background:radial-gradient(120% 55% at 50% -8%,#232c3d 0,rgba(35,44,61,0) 70%),var(--bg);background-attachment:fixed}
+[hidden]{display:none!important}
+body.game{padding-bottom:16px}
+body.game .screen{gap:10px}
+#dText{font-size:14px;line-height:1.4;margin:0}
+.screen{width:var(--w);display:flex;flex-direction:column;align-items:center;gap:12px;animation:in .3s ease}
+@keyframes in{from{opacity:0;transform:translateY(10px)}}
+h1,h2,p{margin:0}
+h1,h2{font-family:var(--serif);font-weight:700;letter-spacing:.01em}
+h1{font-size:32px}h2{font-size:21px}
+p{line-height:1.5;white-space:pre-line}
+.muted{color:var(--hint)}
+.ic{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+button{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:15px;border:1px solid transparent;border-radius:16px;
+background:linear-gradient(180deg,var(--gold2),var(--gold) 55%,#c1974f);color:var(--btx);font:650 15.5px system-ui,sans-serif;cursor:pointer;
+box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 8px 20px -10px rgba(217,180,108,.65);transition:transform .12s,filter .12s}
+button:active{transform:scale(.975);filter:brightness(1.1)}
+button:disabled{opacity:.38}
+.alt{background:linear-gradient(180deg,#1e2430,#171c25);color:var(--tx);border-color:var(--line);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 10px 22px -16px #000}
+
+.hero{position:relative;overflow:hidden;width:100%;border-radius:24px;padding:26px 18px;text-align:center;border:1px solid rgba(217,180,108,.28);
+background:linear-gradient(155deg,#222a39,#141922 70%)}
+.hero::before{content:"";position:absolute;inset:0;background:repeating-conic-gradient(rgba(240,215,156,.09) 0 25%,transparent 0 50%) 0 0/46px 46px;
+-webkit-mask:linear-gradient(215deg,#000,transparent 62%);mask:linear-gradient(215deg,#000,transparent 62%)}
+.hero>*{position:relative}
+.hero p{color:#b9bdc8}
+.hero .logo{display:flex;justify-content:center;align-items:center;font-size:50px;line-height:1.2;min-height:76px}
+.hero .logo .pc{width:84px;height:84px;filter:drop-shadow(0 10px 14px rgba(0,0,0,.55))}
+#home .hero{display:flex;align-items:center;gap:16px;text-align:left;padding:18px 20px}
+#home .hero .logo{order:2;margin-left:auto}
+
+.stats{display:flex;width:100%;background:var(--sec);border:1px solid var(--line);border-radius:18px;padding:10px 0}
+.stat{flex:1;text-align:center}.stat+.stat{border-left:1px solid var(--line)}
+.stat b{display:block;font:700 23px var(--serif);color:var(--gold2)}
+.stat span{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--hint)}
+
+.card{justify-content:flex-start;gap:14px;text-align:left;padding:13px 14px}
+.card i{flex:none;width:50px;height:50px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:24px;color:var(--gold);
+background:radial-gradient(120% 120% at 30% 15%,#303a4e,#1b212d);border:1px solid var(--line)}
+.card i .pc{width:40px;height:40px}
+.card i .ic{width:26px;height:26px}
+.card i.em{filter:sepia(.7) saturate(.9)}
+.card small{display:block;font-size:12.5px;font-weight:500;color:var(--hint);margin-top:3px}
+.card em{margin-left:auto;font-style:normal;color:var(--gold)}
+.big{padding:19px;font:700 19px var(--serif);letter-spacing:.02em}
+.big .ic{width:22px;height:22px;fill:currentColor}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
-.grid .card{flex-direction:column;text-align:center;gap:8px;padding:14px 8px}
-.rhead,.sheet .rhead{background:linear-gradient(150deg,#263652,#1f6f6a)}
-.l{background:#e9dfc8}.d{background:#5d7791}
-.board{border-radius:6px}
-.last{box-shadow:inset 0 0 0 100px rgba(242,169,59,.42)}
-.sel{background:#f2c463!important}
-#rring{background:conic-gradient(#2fbf8f var(--p,0%),rgba(128,128,128,.22) 0)}
-#rkinds{grid-template-columns:repeat(3,1fr)}
-.kind{box-shadow:none}
-.badge{position:absolute;right:0;top:0;width:44%;height:44%;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font:800 calc(var(--bs)/8*.22) system-ui;border:1px solid #fff;z-index:1}
-.lead{display:flex;gap:12px}.lead span:last-child{margin-left:auto}.lead.you{outline:2px solid var(--btn)}
-#nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;background:#10131a;padding:4px 4px calc(4px + env(safe-area-inset-bottom));z-index:5}
-#nav button{max-width:96px;background:none;color:var(--hint);box-shadow:none;padding:6px 0;font-size:11px}
-#nav button i{display:block;font-style:normal;font-size:23px;line-height:1.2}
-#nav button.on{color:var(--btn)}
+.grid .card{flex-direction:column;align-items:flex-start;gap:14px;padding:16px;font-size:16px}
+
+.top{display:flex;align-items:center;gap:12px;width:100%}
+.top button{width:42px;height:42px;padding:0;border-radius:50%;flex:none}
+.top h2{flex:1}
+.box{width:100%;background:var(--sec);border:1px solid var(--line);border-radius:18px;padding:14px 16px}
+.status{width:100%;text-align:center;font-weight:600;min-height:22px}
+.pill{width:auto;max-width:100%;padding:8px 18px;border-radius:99px;background:var(--sec);border:1px solid var(--line);font-size:13.5px}
+.bar{width:100%;height:5px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}
+.bar div{height:100%;background:linear-gradient(90deg,#c1974f,var(--gold2));transition:width .3s}
+.row{display:flex;gap:8px;width:100%}
+.seg{background:#12161d;border:1px solid var(--line);border-radius:17px;padding:4px;gap:4px}
+.seg button{padding:10px 4px;font-size:13.5px;border-radius:13px;border:0}
+.seg .alt{background:none;box-shadow:none;color:var(--hint)}
+.grp{width:100%;margin-top:6px;font:700 12px system-ui;text-transform:uppercase;letter-spacing:.14em;color:var(--gold)}
+
+.player{display:flex;align-items:center;gap:11px;width:var(--bs);margin:-3px 0;padding:0 2px}
+.player i{width:40px;height:40px;border-radius:13px;background:var(--sec);border:1px solid var(--line);display:flex;align-items:center;justify-content:center}
+.player i .pc{width:32px;height:32px}
+.player b{display:block;font-size:14px;line-height:1.25}.player small{color:var(--hint);font-size:12px}
+.player span{margin-left:auto;display:flex;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.player span .pc{width:19px;height:19px;margin-left:-5px}
+.player span .pc.b{stroke:#8f95a3}
+.player em{font:700 12px system-ui;margin-left:8px;color:var(--gold)}
+.tools button{flex-direction:column;gap:4px;padding:10px 4px;font-size:12px}
+
+/* доска и фигуры */
+.board{position:relative;flex:none;width:var(--bs);height:var(--bs);display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));
+border:5px solid #252b37;border-radius:14px;overflow:hidden;user-select:none;box-shadow:0 0 0 1px rgba(217,180,108,.45),0 22px 40px -18px #000}
+.sq{display:flex;align-items:center;justify-content:center;position:relative;min-width:0;min-height:0;overflow:hidden}
+.l{background:linear-gradient(135deg,#ece5d5,#dfd6c2)}
+.d{background:linear-gradient(135deg,#5f8077,#4d6c65)}
+.sq .pc{width:94%;height:94%;pointer-events:none;filter:drop-shadow(0 2px 1.5px rgba(0,0,0,.35));z-index:1}
+.pc{display:block;overflow:visible;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.pc.w{fill:url(#gw);stroke:#4b4134;--d:#8d7a5c}
+.pc.b{fill:url(#gb2);stroke:#0b0d11;--d:#d9b46c}
+.last{box-shadow:inset 0 0 0 100px rgba(233,190,92,.45)}
+.sel{background:#e3bd6a!important}
+.chk{background:radial-gradient(circle,#e5484d 28%,rgba(229,72,77,.35) 62%,transparent 74%),#d9c9b4!important}
+.dot::after{content:"";position:absolute;width:28%;height:28%;border-radius:50%;background:rgba(14,17,22,.34);z-index:2}
+.dot.occ::after{width:94%;height:94%;background:none;border:3px solid rgba(14,17,22,.38)}
+.sq[data-f]::before,.sq[data-r] u{font:700 9px system-ui;position:absolute;text-decoration:none;color:rgba(30,40,40,.55)}
+.d[data-f]::before,.d[data-r] u{color:rgba(240,235,222,.7)}
+.sq[data-f]::before{content:attr(data-f);right:3px;bottom:1px}
+.sq[data-r] u{left:3px;top:2px}
+.arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+
+#om span{display:inline-block;margin-right:8px;color:var(--hint)}
+#om span.on{color:var(--gold2);font-weight:700}
+.lead{display:flex;align-items:center;gap:14px}.lead span:first-child{font:700 18px var(--serif);color:var(--gold);min-width:24px}
+.lead span:last-child{margin-left:auto;color:var(--gold2)}.lead.you{border-color:var(--gold);background:#242219}
+
+#promo{position:fixed;inset:0;background:rgba(5,7,10,.72);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;z-index:9}
+#promo .box{width:var(--w);display:flex;flex-direction:column;gap:12px}
+#promo button{padding:8px}#promo button .pc{width:54px;height:54px}
+
+#nav{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:460px;margin:0 auto;display:flex;padding:6px;border-radius:24px;
+background:rgba(22,27,36,.9);backdrop-filter:blur(14px);border:1px solid var(--line);box-shadow:0 18px 36px -14px #000;z-index:5}
+#nav button{flex-direction:column;gap:3px;background:none;border:0;color:var(--hint);box-shadow:none;padding:8px 0;font-size:10.5px;font-weight:600;border-radius:18px}
+#nav button.on{color:var(--gold2);background:rgba(217,180,108,.13)}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<linearGradient id="gw" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#fffdf6"/><stop offset="1" stop-color="#dccba8"/></linearGradient>
+<linearGradient id="gb2" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#4a5263"/><stop offset="1" stop-color="#12151c"/></linearGradient>
+</defs>
+<symbol id="p-p" viewBox="0 0 100 100" overflow="visible"><path d="M42 42C42 58 35 69 29 79H71C65 69 58 58 58 42Z"/><rect x="34" y="37" width="32" height="8" rx="4"/><circle cx="50" cy="25" r="13.5"/><path style="fill:none;stroke:var(--d)" d="M34 86.5H66"/><path d="M27 79H73L76 84H24Z"/><rect x="19" y="84" width="62" height="10" rx="4"/></symbol>
+<symbol id="p-r" viewBox="0 0 100 100" overflow="visible"><path d="M34 42L37 68L30 79H70L63 68L66 42Z"/><path d="M26 16H37V24H44.5V16H55.5V24H63V16H74V34L66 43H34L26 34Z"/><path style="fill:none;stroke:var(--d)" d="M35 35H65M38 68H62M34 86.5H66"/><path d="M27 79H73L76 84H24Z"/><rect x="19" y="84" width="62" height="10" rx="4"/></symbol>
+<symbol id="p-b" viewBox="0 0 100 100" overflow="visible"><path d="M41 65C41 70 36 75 31 79H69C64 75 59 70 59 65Z"/><path d="M50 18C65 30 72 45 62 58H38C28 45 35 30 50 18Z"/><rect x="33" y="57" width="34" height="9" rx="4.5"/><circle cx="50" cy="12" r="6"/><path style="fill:none;stroke:var(--d)" d="M57 32L45 46M34 86.5H66"/><path d="M27 79H73L76 84H24Z"/><rect x="19" y="84" width="62" height="10" rx="4"/></symbol>
+<symbol id="p-n" viewBox="0 0 100 100" overflow="visible"><path d="M31 79C31 63 39 55 48 47C41 49 35 56 27 55C20 53 18 47 22 42C28 36 31 29 38 23L39 9L49 18C68 20 78 36 78 55C78 66 72 71 71 79Z"/><circle style="fill:var(--d);stroke:none" cx="39" cy="31" r="3.2"/><path style="fill:none;stroke:var(--d)" d="M55 27C66 34 69 47 66 60M24 46L29 45M34 86.5H66"/><path d="M27 79H73L76 84H24Z"/><rect x="19" y="84" width="62" height="10" rx="4"/></symbol>
+<symbol id="p-q" viewBox="0 0 100 100" overflow="visible"><path d="M36 68L30 79H70L64 68Z"/><path d="M31 61L21 27L37 45L39 17L50 43L61 17L63 45L79 27L69 61Z"/><rect x="30" y="60" width="40" height="9" rx="4.5"/><circle cx="20" cy="23" r="5.5"/><circle cx="38.500" cy="13" r="5.500"/><circle cx="61.500" cy="13" r="5.500"/><circle cx="80" cy="23" r="5.500"/><path style="fill:none;stroke:var(--d)" d="M37 54Q50 49 63 54M34 86.5H66"/><path d="M27 79H73L76 84H24Z"/><rect x="19" y="84" width="62" height="10" rx="4"/></symbol>
+<symbol id="p-k" viewBox="0 0 100 100" overflow="visible"><path d="M36 68L30 79H70L64 68Z"/><path d="M50 32C59 21 79 27 77 43C76 52 67 56 66 62H34C33 56 24 52 23 43C21 27 41 21 50 32Z"/><rect x="31" y="60" width="38" height="9" rx="4.5"/><path d="M46 4H54V11H61V19H54V30H46V19H39V11H46Z"/><path style="fill:none;stroke:var(--d)" d="M50 33V56M34 86.5H66"/><path d="M27 79H73L76 84H24Z"/><rect x="19" y="84" width="62" height="10" rx="4"/></symbol>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11L12 4L20 11M6.5 9.5V20H17.5V9.5"/></symbol>
+<symbol id="i-puzzle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><path d="M12 1.5V5M12 19V22.5M1.5 12H5M19 12H22.5"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5L19 12L8 18.5Z"/></symbol>
+<symbol id="i-lesson" viewBox="0 0 24 24"><path d="M12 6C10 4.3 7 4 3.5 4.7V18.5C7 17.8 10 18.1 12 19.8C14 18.1 17 17.8 20.5 18.500V4.700C17 4 14 4.3 12 6V19.8"/></symbol>
+<symbol id="i-open" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.500L13.500 13.500L8.500 15.500L10.500 10.500Z"/></symbol>
+<symbol id="i-top" viewBox="0 0 24 24"><path d="M7 4H17V10A5 5 0 0 1 7 10ZM7 6H4V7.500A3.500 3.500 0 0 0 7.500 11M17 6H20V7.500A3.500 3.500 0 0 1 16.500 11M12 15V19M8 20H16"/></symbol>
+<symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 7L4 12L9 17M4 12H15A5 5 0 0 1 15 22"/></symbol>
+<symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18H15M10 21H14M12 3A6 6 0 0 0 8.500 14C9.300 14.700 9.500 15.300 9.500 16H14.500C14.500 15.300 14.700 14.700 15.500 14A6 6 0 0 0 12 3Z"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5V19M5 12H19"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.500" width="14" height="10" rx="2.500"/><path d="M8 10.500V7.500A4 4 0 0 1 16 7.500V10.500"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20H20M7 20V13M12 20V5M17 20V10"/></symbol>
+<symbol id="i-flag" viewBox="0 0 24 24"><path d="M6 21V4M6 5H18L15 9L18 13H6"/></symbol>
+<symbol id="i-back" viewBox="0 0 24 24"><path d="M14.500 5L7.500 12L14.500 19"/></symbol>
+</svg>
 <div id="intro" class="screen" hidden>
-  <div class="hero"><div class="logo">♞</div><h1>Шахматы</h1><p>Учись, играй и решай задачи прямо в Telegram</p></div>
+  <div class="hero"><div class="logo"><svg class="pc w"><use href="#p-n"/></svg></div><h1>Шахматы</h1><p>Учись, играй и решай задачи прямо в Telegram</p></div>
   <button id="go">Начать! Я уже умею играть</button>
   <button class="alt" id="newbie">Я новичок, научите меня</button>
 </div>
 
 <div id="home" class="screen" hidden>
-  <div class="hero"><div class="logo">♞</div><h1>Шахматы</h1><p>Чем займёмся?</p></div>
+  <div class="hero"><div class="logo"><svg class="pc w"><use href="#p-n"/></svg></div><div><h1>Шахматы</h1><p>Чем займёмся?</p></div></div>
   <div class="stats">
     <div class="stat"><b id="hr">1200</b><span>рейтинг</span></div>
     <div class="stat"><b id="hs">0</b><span>решено</span></div>
     <div class="stat"><b id="hw">0</b><span>побед над ботом</span></div>
   </div>
-  <button class="big" id="mPlay">♟ Играть</button>
+  <button class="big" id="mPlay"><svg class="ic"><use href="#i-play"/></svg>Играть с ботом</button>
   <div class="grid">
-    <button class="alt card" id="mPuz"><i>♜</i><div>Задачи<small>Найди лучший ход</small></div></button>
-    <button class="alt card" id="mLes"><i>♝</i><div>Уроки<small id="lesCount">Все правила</small></div></button>
-    <button class="alt card" id="mOpen"><i>♛</i><div>Дебюты<small>Дебюты и гамбиты</small></div></button>
-    <button class="alt card" id="mTop" hidden><i>🏆</i><div>Лидеры<small>10 лучших</small></div></button>
+    <button class="alt card" id="mPuz"><i><svg class="ic"><use href="#i-puzzle"/></svg></i><div>Задачи<small>Найди лучший ход</small></div></button>
+    <button class="alt card" id="mLes"><i><svg class="ic"><use href="#i-lesson"/></svg></i><div>Уроки<small id="lesCount">Все правила</small></div></button>
+    <button class="alt card" id="mOpen"><i><svg class="ic"><use href="#i-open"/></svg></i><div>Дебюты<small>Дебюты и гамбиты</small></div></button>
+    <button class="alt card" id="mMid"><i><svg class="pc w"><use href="#p-n"/></svg></i><div>Миттельшпиль<small id="midCount">Планы и атака</small></div></button>
+    <button class="alt card" id="mEnd"><i><svg class="pc w"><use href="#p-k"/></svg></i><div>Эндшпиль<small id="endCount">Окончания</small></div></button>
+    <button class="alt card" id="mTop" hidden><i><svg class="ic"><use href="#i-top"/></svg></i><div>Лидеры<small>10 лучших</small></div></button>
   </div>
 </div>
 
 <div id="openings" class="screen" hidden>
-  <div class="top"><button class="alt back">←</button><h2>Начала партий</h2></div>
-  <div class="row seg" id="okind"><button data-k="0">♟ Дебюты</button><button class="alt" data-k="1">⚔️ Гамбиты</button></div>
+  <div class="top"><button class="alt back"><svg class="ic"><use href="#i-back"/></svg></button><h2>Начала партий</h2></div>
+  <div class="row seg" id="okind"><button data-k="0">Дебюты</button><button class="alt" data-k="1">Гамбиты</button></div>
   <p id="oabout" class="box"></p>
   <div id="olist" class="screen"></div>
 </div>
 
 <div id="opening" class="screen" hidden>
-  <div class="top"><button class="alt back">←</button><h2 id="ot"></h2><button class="alt" id="oflip">⇅</button></div>
+  <div class="top"><button class="alt back"><svg class="ic"><use href="#i-back"/></svg></button><h2 id="ot"></h2><button class="alt" id="oflip">⇅</button></div>
   <div id="om" class="box"></div>
   <div id="ob" class="board"></div>
   <div id="os" class="status"></div>
@@ -167,25 +190,25 @@ button:active{transform:translateY(3px);box-shadow:0 1px 0 #b9761a}
 </div>
 
 <div id="lock" class="screen" hidden>
-  <div class="top"><button class="alt back">←</button><h2>Закрыто</h2></div>
-  <div class="hero"><div class="logo">🔒</div><p id="lwhy"></p></div>
+  <div class="top"><button class="alt back"><svg class="ic"><use href="#i-back"/></svg></button><h2>Закрыто</h2></div>
+  <div class="hero"><div class="logo" style="color:var(--gold)"><svg class="ic" style="width:52px;height:52px"><use href="#i-lock"/></svg></div><p id="lwhy"></p></div>
   <p class="box">Подписка оформляется в чате с ботом.</p>
   <button id="tobot">Перейти в бота</button>
 </div>
 
 <div id="leaders" class="screen" hidden>
-  <div class="top"><button class="alt back">←</button><h2>Таблица лидеров</h2></div>
+  <div class="top"><button class="alt back"><svg class="ic"><use href="#i-back"/></svg></button><h2>Таблица лидеров</h2></div>
   <p id="tstat" class="status"></p>
   <div id="tlist" class="screen"></div>
 </div>
 
 <div id="lessons" class="screen" hidden>
-  <div class="top"><button class="alt back">←</button><h2>Уроки</h2></div>
+  <div class="top"><button class="alt back"><svg class="ic"><use href="#i-back"/></svg></button><h2>Уроки</h2></div>
   <div id="list" class="screen"></div>
 </div>
 
 <div id="lesson" class="screen" hidden>
-  <div class="top"><button class="alt back">←</button><h2 id="tt"></h2><span id="tnum" class="muted"></span></div>
+  <div class="top"><button class="alt back"><svg class="ic"><use href="#i-back"/></svg></button><h2 id="tt"></h2><span id="tnum" class="muted"></span></div>
   <div class="bar"><div id="tbar"></div></div>
   <p id="tp" class="box"></p>
   <div id="tb" class="board"></div>
@@ -193,14 +216,30 @@ button:active{transform:translateY(3px);box-shadow:0 1px 0 #b9761a}
   <div class="row"><button class="alt" id="tprev">Назад</button><button class="alt" id="tr">↺ Заново</button><button id="tn">Далее</button></div>
 </div>
 
+<div id="train" class="screen" hidden>
+  <div class="top"><button class="alt back"><svg class="ic"><use href="#i-back"/></svg></button><h2 id="trTitle"></h2></div>
+  <p id="trAbout" class="box"></p>
+  <div id="trList" class="screen"></div>
+</div>
+
+<div id="drill" class="screen" hidden>
+  <div class="top"><button class="alt back"><svg class="ic"><use href="#i-back"/></svg></button><h2 id="dTitle"></h2></div>
+  <p id="dText" class="box"></p>
+  <div id="db" class="board"></div>
+  <div id="dStatus" class="status"></div>
+  <div class="bar" id="dBarBox" hidden><div id="dBar"></div></div>
+  <div class="row tools"><button class="alt" id="dUndo"><svg class="ic"><use href="#i-undo"/></svg>Вернуть</button><button class="alt" id="dHint"><svg class="ic"><use href="#i-bulb"/></svg>Подсказка</button><button class="alt" id="dAgain"><svg class="ic"><use href="#i-plus"/></svg>Заново</button></div>
+  <button id="dNext" hidden>Следующее задание</button>
+</div>
+
 <div id="offer" class="screen" hidden>
   <div class="hero"><div class="logo">🎉</div><h1>Правила пройдены!</h1><p>Теперь попробуй их в настоящей партии. Бот-новичок играет просто и часто ошибается.</p></div>
-  <button id="yes">Сыграть с ботом ♟</button>
+  <button id="yes">Сыграть с ботом</button>
   <button class="alt" id="no">Не сейчас</button>
 </div>
 
 <div id="app" class="screen" hidden>
-  <div class="top"><button class="alt back">←</button><h2>Задачи</h2></div>
+  <div class="top"><button class="alt back"><svg class="ic"><use href="#i-back"/></svg></button><h2>Задачи</h2></div>
   <div class="stats">
     <div class="stat"><b id="r">1200</b><span>рейтинг</span></div>
     <div class="stat"><b id="s">0</b><span>решено</span></div>
@@ -214,55 +253,31 @@ button:active{transform:translateY(3px);box-shadow:0 1px 0 #b9761a}
 </div>
 
 <div id="play" class="screen" hidden>
-  <div class="top"><button class="alt back">←</button><h2>Игра с ботом</h2></div>
+  <div class="top"><button class="alt back"><svg class="ic"><use href="#i-back"/></svg></button><h2>Игра с ботом</h2></div>
   <div class="row seg" id="levels"></div>
-  <div class="player"><i>🤖</i><div><b>Бот</b><small id="pbName"></small></div><span id="capB"></span></div>
+  <div class="player"><i><svg class="pc b"><use href="#p-n"/></svg></i><div><b>Бот</b><small id="pbName"></small></div><span id="capB"></span></div>
   <div id="gb" class="board"></div>
-  <div class="player"><i>🙂</i><div><b>Ты</b><small>белые</small></div><span id="capW"></span></div>
+  <div class="player"><i><svg class="pc w"><use href="#p-p"/></svg></i><div><b>Ты</b><small>белые</small></div><span id="capW"></span></div>
   <div id="gs" class="status pill"></div>
-  <div class="row tools"><button class="alt" id="undo"><i>↶</i>Вернуть</button><button class="alt" id="hint"><i>💡</i>Подсказка</button><button id="newg"><i>＋</i>Новая игра</button></div>
-  <button id="report" hidden>📋 Отчёт о партии</button>
-  <button class="alt" id="resign" hidden>🏳️ Сдаться</button>
-</div>
-
-<div id="review" hidden>
-  <div class="sheet">
-    <div class="rhead">
-      <div><h2 id="rtitle"></h2><small id="rsub" class="muted"></small></div>
-      <button class="alt" id="rclose" aria-label="Закрыть">✕</button>
-    </div>
-    <div class="rscroll">
-      <div id="rload"><div class="spin">♞</div><p id="rstat" class="status"></p><div class="bar"><div id="rbar"></div></div><button class="alt" id="rretry" hidden>↻ Повторить</button></div>
-      <div id="rlock" hidden><div class="spin" style="animation:none">📊</div><p id="rwhy" class="status"></p><button id="rpro">Перейти в бота</button></div>
-      <div id="rbody">
-        <div class="acc"><div id="rring"><b id="racc"></b></div><div><b>Точность твоей игры</b><p id="rnote" class="muted"></p></div></div>
-        <div id="rkinds"></div>
-        <div id="rgraph"></div>
-        <div id="rb" class="board"></div>
-        <div id="rtext"></div>
-        <div class="row"><button class="alt" id="rprev">◀ Назад</button><button class="alt" id="rnext">Дальше ▶</button></div>
-        <div id="rmoves"></div>
-      </div>
-    </div>
-    <div class="rfoot"><button id="rnew">♟ Начать новую партию</button></div>
-  </div>
+  <div class="row tools"><button class="alt" id="undo"><svg class="ic"><use href="#i-undo"/></svg>Вернуть</button><button class="alt" id="hint"><svg class="ic"><use href="#i-bulb"/></svg>Подсказка</button><button id="newg"><svg class="ic"><use href="#i-plus"/></svg>Новая игра</button></div>
+  <button class="alt" id="resign" hidden><svg class="ic"><use href="#i-flag"/></svg>Сдаться</button>
 </div>
 
 <div id="promo" hidden><div class="box"><p class="status">В кого превратить пешку?</p><div class="row"></div></div></div>
 
 <nav id="nav" hidden>
-  <button data-n="home"><i>⌂</i>Главная</button>
-  <button data-n="app"><i>♜</i>Задачи</button>
-  <button data-n="play"><i>♟</i>Играть</button>
-  <button data-n="lessons"><i>♝</i>Уроки</button>
-  <button data-n="openings"><i>♛</i>Дебюты</button>
+  <button data-n="home"><svg class="ic"><use href="#i-home"/></svg>Главная</button>
+  <button data-n="app"><svg class="ic"><use href="#i-puzzle"/></svg>Задачи</button>
+  <button data-n="play"><svg class="ic"><use href="#i-play"/></svg>Играть</button>
+  <button data-n="lessons"><svg class="ic"><use href="#i-lesson"/></svg>Уроки</button>
+  <button data-n="openings"><svg class="ic"><use href="#i-open"/></svg>Дебюты</button>
 </nav>
 
 <script>
 const tg = window.Telegram && Telegram.WebApp;
 if (tg) {
   tg.ready(); tg.expand();
-  try { tg.setHeaderColor('#171b24'); tg.setBackgroundColor('#171b24'); } catch (e) {}
+  try { tg.setHeaderColor('#0e1116'); tg.setBackgroundColor('#0e1116'); } catch (e) {}
 }
 if (!window.Chess) alert('Игра не загрузилась, проверь интернет');
 
@@ -279,7 +294,10 @@ const PUZZLES = [
   {fen:'6k1/5ppp/8/8/8/8/5PPP/R2R2K1 w - - 0 1', sol:[['d1d8','a1a8']]},
   {fen:'6k1/8/8/8/8/8/R7/1R4K1 w - - 0 1', sol:[['a2a7','b1b7'],'g8f8',['b1b8','a2a8']]}
 ];
-const GL = {k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'};
+// фигура из набора в начале страницы
+const piece = (type, color) => `<svg class="pc ${color}"><use href="#p-${type}"/></svg>`;
+const GLYPH = {'♚':'k', '♛':'q', '♜':'r', '♝':'b', '♞':'n', '♟':'p'};
+const lessonIcon = ch => GLYPH[ch[0]] ? `<i>${piece(GLYPH[ch[0]], 'w')}</i>` : `<i class="em">${ch}</i>`;
 const $ = id => document.getElementById(id);
 
 let S = {rating:1200, solved:0, streak:0, best:0, wins:0, level:0, track:0, done:{}, adv:{}, open:{}};
@@ -346,7 +364,7 @@ function paint(el, get, sel, targets, last, flip, check) {
     if (sq === check) cls.push('chk');
     const coord = (r === 7 ? ` data-f="${sq[0]}"` : '') + (c === 0 ? ' data-r' : '');
     h += `<div class="${cls.join(' ')}" data-sq="${sq}"${coord}>` + (c === 0 ? `<u>${sq[1]}</u>` : '') +
-         (p ? `<span class="${p.color}">${GL[p.type]}\uFE0E</span>` : '') + '</div>';
+         (p ? piece(p.type, p.color) : '') + '</div>';
   }
   el.innerHTML = h;
 }
@@ -530,12 +548,12 @@ $('skip').addEventListener('click', () => {
 
 // ---- Навигация ----
 const ONB = 'onboarded2'; // чтобы показать приветствие всем заново, смени на 'onboarded3'
-const SCREENS = ['intro', 'home', 'lessons', 'lesson', 'offer', 'app', 'play', 'openings', 'opening', 'leaders', 'lock'];
+const SCREENS = ['intro', 'home', 'lessons', 'lesson', 'offer', 'app', 'play', 'openings', 'opening', 'leaders', 'lock', 'train', 'drill'];
 function show(id) {
-  closeReview();
   SCREENS.forEach(x => { $(x).hidden = x !== id; });
   $('promo').hidden = true;
-  $('nav').hidden = !['home', 'app', 'play', 'lessons', 'openings', 'leaders'].includes(id);
+  $('nav').hidden = !['home', 'app', 'lessons', 'openings', 'leaders', 'train'].includes(id);
+  document.body.classList.toggle('game', id === 'play' || id === 'drill');
   [...$('nav').children].forEach(b => b.classList.toggle('on', b.dataset.n === id));
   window.scrollTo(0, 0);
   try { if (id === 'home' || id === 'intro') tg.BackButton.hide(); else tg.BackButton.show(); } catch (e) {}
@@ -544,6 +562,7 @@ function home() {
   kv.set(ONB, '1');
   $('hr').textContent = S.rating; $('hs').textContent = S.solved; $('hw').textContent = S.wins;
   $('lesCount').textContent = (S.track ? 'Продвинутые: ' : 'Основы: ') + Object.keys(doneMap()).length + ' из ' + course_().length;
+  trainCounts();
   show('home');
 }
 function puzzles() { stats(); show('app'); if (window.Chess && !P && !loading) next(S.solved ? undefined : 0); }
@@ -700,7 +719,7 @@ function askPromo(g, from, to, cb) {
   row.innerHTML = '';
   for (const t of 'qrbn') {
     const b = document.createElement('button');
-    b.className = 'alt'; b.textContent = GL[t] + '︎';
+    b.className = 'alt'; b.innerHTML = piece(t, g.turn());
     b.onclick = () => { $('promo').hidden = true; cb(t); };
     row.appendChild(b);
   }
@@ -710,7 +729,7 @@ function lessonList() {
   const tab = (n, name) => `<button class="${S.track === n ? '' : 'alt'}" data-track="${n}">${name}</button>`;
   $('list').innerHTML = `<div class="row seg">${tab(0, 'Основы')}${tab(1, 'Продвинутые')}</div>` +
     '<button data-all="1">▶ Пройти все по порядку</button>' + course_().map((l, i) =>
-    `<button class="alt card o" data-i="${i}"><i>${l.i}</i><div>${l.t}</div><em>${doneMap()[i] ? '✅' : '›'}</em></button>`).join('');
+    `<button class="alt card" data-i="${i}">${lessonIcon(l.i)}<div>${l.t}</div><em>${doneMap()[i] ? '✅' : '›'}</em></button>`).join('');
   show('lessons');
 }
 $('list').addEventListener('click', e => {
@@ -798,9 +817,7 @@ function gdraw() {
   if (resigned) t = 'Ты сдался';
   $('gs').textContent = t;
   const over = resigned || G.game_over();
-  $('report').hidden = !over || !G.history().length;
   drawPlayers();
-  autoReport(over);
   $('resign').hidden = over || thinking || G.history().length < 2;
   $('undo').disabled = thinking || !G.history().length;
   $('hint').disabled = thinking || over_();
@@ -815,7 +832,7 @@ function drawPlayers() {
   const diff = Math.round((sum(taken.w) - sum(taken.b)) / 100);
   for (const [color, id] of [['w', 'capW'], ['b', 'capB']]) {
     const plus = color === 'w' ? diff : -diff;
-    $(id).innerHTML = taken[color].sort((a, b) => VAL[a] - VAL[b]).map(p => GL[p] + '︎').join('') + (plus > 0 ? `<em>+${plus}</em>` : '');
+    $(id).innerHTML = taken[color].sort((a, b) => VAL[a] - VAL[b]).map(p => piece(p, color === 'w' ? 'b' : 'w')).join('') + (plus > 0 ? `<em>+${plus}</em>` : '');
   }
 }
 function newGame() {
@@ -824,7 +841,6 @@ function newGame() {
 function openPlay(level) {
   if (level !== undefined) { S.level = level; save(); }
   show('play');
-  loadEngine(); // движок для отчёта грузится заранее
   if (!G || level !== undefined) newGame(); else gdraw();
 }
 function finished() {
@@ -881,241 +897,582 @@ $('resign').addEventListener('click', () => {
   resigned = true; gtoken++; gsel = ghint = null; gdraw();
 });
 
-// ---- Отчёт о партии ----
-// Stockfish 19: /engine.js отдаёт сервер приложения, вторая ссылка запасная.
-const CDN = 'https://cdn.jsdelivr.net/npm/stockfish@19.0.1/bin/stockfish-19-lite-single.';
-const SF_URLS = [
-  () => new Worker('/engine.js'),
-  () => new Worker(URL.createObjectURL(new Blob([`importScripts('${CDN}js')`], {type: 'text/javascript'})) + '#' + encodeURIComponent(CDN + 'wasm'))
-];
-const THINK = 800; // миллисекунд на позицию
-let sf = null, sfLoading = null;
-function ask(worker, cmds, until, ms) {
-  return new Promise((res, rej) => {
-    const lines = [];
-    const timer = setTimeout(() => rej(new Error('timeout')), ms);
-    worker.onerror = e => { e.preventDefault(); clearTimeout(timer); rej(new Error('worker')); };
-    worker.onmessage = e => {
-      for (const line of String(e.data).split('\n')) {
-        lines.push(line);
-        if (line.startsWith(until)) { clearTimeout(timer); res(lines); }
+// ---- Эндшпиль: безошибочный расчёт позиций до 4 фигур (работает в фоновом потоке) ----
+function EGCore() {
+  const VAL = {Q: 9, R: 5, B: 3, N: 3, P: 1, K: 0};
+  const TYPES = 'KQRBNP';
+  const file = s => s & 7, rank = s => s >> 3;
+  // геометрия: STEPS[тип][откуда] = лучи клеток
+  const STEPS = {};
+  const DIRS = {K: [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]], N: [[1,2],[2,1],[-1,2],[-2,1],[1,-2],[2,-1],[-1,-2],[-2,-1]],
+    R: [[1,0],[-1,0],[0,1],[0,-1]], B: [[1,1],[1,-1],[-1,1],[-1,-1]]};
+  DIRS.Q = DIRS.K;
+  for (const t of 'KQRBN') STEPS[t] = Array.from({length: 64}, (_, s) => DIRS[t].map(([df, dr]) => {
+    const ray = [];
+    for (let f = file(s) + df, r = rank(s) + dr; f >= 0 && f < 8 && r >= 0 && r < 8; f += df, r += dr) {
+      ray.push(r * 8 + f);
+      if (t === 'K' || t === 'N') break;
+    }
+    return ray;
+  }).filter(x => x.length));
+  // ATT[тип][a*64+b] = список клеток между a и b, либо null, если фигура с a не бьёт b
+  const ATT = {};
+  for (const t of 'KQRBN') {
+    ATT[t] = new Array(4096).fill(null);
+    for (let a = 0; a < 64; a++) for (const ray of STEPS[t][a]) ray.forEach((b, i) => { ATT[t][a * 64 + b] = ray.slice(0, i); });
+  }
+  // бьёт ли цвет by клетку target; skip: номер фигуры, снятой с доски
+  function attacked(P, sq, target, by, skip) {
+    for (let i = 0; i < P.length; i++) {
+      const p = P[i];
+      if (p.c !== by || i === skip) continue;
+      const a = sq[i];
+      if (p.t === 'P') {
+        if (rank(target) - rank(a) === (by ? -1 : 1) && Math.abs(file(target) - file(a)) === 1) return true;
+        continue;
       }
+      const between = ATT[p.t][a * 64 + target];
+      if (!between) continue;
+      let free = true;
+      for (let k = 0; k < between.length && free; k++)
+        for (let j = 0; j < sq.length; j++) if (j !== skip && sq[j] === between[k]) { free = false; break; }
+      if (free) return true;
+    }
+    return false;
+  }
+  const kingOf = (P, c) => P.findIndex(p => p.t === 'K' && p.c === c);
+  const at = (sq, s) => sq.indexOf(s);
+  // все ходы стороны stm; f(номер фигуры, клетка, номер взятой фигуры или -1, превращение)
+  function gen(P, sq, stm, f) {
+    const king = kingOf(P, stm);
+    const alone = P.every(p => p.c === stm || p.t === 'K'); // у соперника один король
+    const tryMove = (i, to, cap, promo) => {
+      if (alone && i !== king) return f(i, to, cap, promo); // открыть своего короля нельзя
+      const old = sq[i];
+      sq[i] = to;
+      const bad = attacked(P, sq, sq[king], 1 - stm, cap);
+      sq[i] = old;
+      if (!bad) f(i, to, cap, promo);
     };
-    cmds.forEach(c => worker.postMessage(c));
-  });
-}
-function loadEngine() {
-  if (sf) return Promise.resolve(sf);
-  return sfLoading || (sfLoading = (async () => {
-    for (const make of SF_URLS) {
-      let w;
-      try {
-        w = make();
-        await ask(w, ['uci'], 'uciok', 30000); // на телефоне первая загрузка бывает долгой
-        await ask(w, ['setoption name Hash value 32', 'isready'], 'readyok', 20000);
-        return sf = w;
-      } catch (e) { if (w) w.terminate(); console.log('engine', e.message); }
+    for (let i = 0; i < P.length; i++) {
+      const p = P[i];
+      if (p.c !== stm) continue;
+      const a = sq[i];
+      if (p.t === 'P') {
+        const d = stm ? -8 : 8, last = stm ? 0 : 7;
+        const push = (to, cap) => { if (rank(to) === last) for (const x of 'QRBN') tryMove(i, to, cap, x); else tryMove(i, to, cap, ''); };
+        if (at(sq, a + d) < 0) {
+          push(a + d, -1);
+          if (rank(a) === (stm ? 6 : 1) && at(sq, a + 2 * d) < 0) push(a + 2 * d, -1);
+        }
+        for (const df of [-1, 1]) {
+          if (file(a) + df < 0 || file(a) + df > 7) continue;
+          const j = at(sq, a + d + df);
+          if (j >= 0 && P[j].c !== stm) push(a + d + df, j);
+        }
+        continue;
+      }
+      for (const ray of STEPS[p.t][a]) for (const to of ray) {
+        const j = at(sq, to);
+        if (j < 0) { tryMove(i, to, -1, ''); continue; }
+        if (P[j].c !== stm && P[j].t !== 'K') tryMove(i, to, j, '');
+        break;
+      }
     }
-    return null;
-  })().finally(() => { sfLoading = null; }));
-}
-// Возвращает {score: оценка для того, чей ход (в сотых пешки), best: лучший ход UCI}
-async function analyse(g, engine) {
-  if (g.in_checkmate()) return {score: -10000};
-  if (g.game_over()) return {score: 0};
-  const lines = await ask(engine, ['position fen ' + g.fen(), 'go movetime ' + THINK], 'bestmove', 20000);
-  let score = 0;
-  for (const l of lines) {
-    const m = / score (cp|mate) (-?\d+)/.exec(l);
-    if (m && !/bound/.test(l)) score = m[1] === 'cp' ? +m[2] : (+m[2] > 0 ? 10000 : -10000);
   }
-  return {score, best: lines[lines.length - 1].split(' ')[1]};
-}
-// значок, название, цвет
-const KINDS = {
-  best: ['★', 'Лучший', '#2fbf8f'], great: ['!', 'Отличный', '#35a7c9'], good: ['✓', 'Хороший', '#8aa0b8'],
-  soft: ['?!', 'Неточность', '#f2c14e'], bad: ['?', 'Ошибка', '#f0883a'], blunder: ['??', 'Зевок', '#ef5350']
-};
-const NAMES = {p:'пешку', n:'коня', b:'слона', r:'ладью', q:'ферзя'};
-// шансы на победу в процентах по оценке позиции
-const chance = cp => 100 / (1 + Math.exp(-0.00368 * Math.max(-1500, Math.min(1500, cp))));
-const find = (g, uci) => uci && g.moves({verbose: true}).find(m => m.from + m.to === uci.slice(0, 4) && (!m.promotion || m.promotion === (uci[4] || 'q')));
-
-let items = [], graph = [], ri = 0, rtoken = 0, analysing = false, doneKey = '', shownKey = '';
-const gameKey = () => gtoken + ':' + G.history().length;
-function result() {
-  if (resigned) return ['🏳️ Ты сдался', 'Посмотрим, где можно было сыграть лучше'];
-  if (G.in_checkmate()) return G.turn() === 'b' ? ['🏆 Победа!', 'Ты поставил мат'] : ['Поражение', 'Бот поставил мат'];
-  return ['🤝 Ничья', G.in_stalemate() ? 'Пат' : 'Партия закончилась вничью'];
-}
-// отчёт сам открывается поверх доски, когда партия закончена
-function autoReport(over) {
-  if (!over || !G.history().length) return;
-  const key = gameKey();
-  if (shownKey === key) return;
-  shownKey = key;
-  setTimeout(() => { if (!$('play').hidden && key === gameKey()) openReview(); }, 900);
-}
-function closeReview() {
-  if ($('review').hidden) return;
-  $('review').hidden = true; document.body.style.overflow = '';
-  rtoken++;
-  if (analysing) { // прерываем расчёт
-    analysing = false;
-    if (sf) { sf.terminate(); sf = null; }
+  // позиция после хода
+  function apply(P, sq, i, to, cap, promo) {
+    const nP = [], nS = [];
+    for (let k = 0; k < P.length; k++) {
+      if (k === cap) continue;
+      nP.push(k === i && promo ? {c: P[k].c, t: promo} : P[k]);
+      nS.push(k === i ? to : sq[k]);
+    }
+    return [nP, nS];
   }
-}
-async function openReview() {
-  const [title, sub] = result(), key = gameKey();
-  $('rtitle').textContent = title; $('rsub').textContent = sub;
-  $('review').hidden = false; document.body.style.overflow = 'hidden';
-  const token = ++rtoken;
-  $('rlock').hidden = true;
-  const wait = text => { $('rload').hidden = false; $('rbody').hidden = true; $('rretry').hidden = true; $('rbar').style.width = '0'; $('rstat').textContent = text; };
-  if (API_URL && !(acc && acc.pro && acc.until * 1000 > Date.now())) { // анализ входит в подписку
-    wait('Готовлю отчёт…');
-    let why = 'Анализ партии доступен по подписке: ошибки, лучшие ходы и точность игры.', pro = false;
-    try { const d = await api('top'); if (token !== rtoken) return; sync(d.me); showAccess(d.access); pro = d.access.pro; }
-    catch (e) { why = apiError(e); }
-    if (token !== rtoken) return;
-    if (!pro) { $('rload').hidden = true; $('rwhy').textContent = why; $('rlock').hidden = false; return; }
+  // порядок фигур в таблице: пешка (если есть), короли, остальные
+  function order(P, sq) {
+    const key = p => p.t === 'P' ? 0 : p.t === 'K' ? 1 + p.c : 3 + p.c * 6 + TYPES.indexOf(p.t);
+    const ids = P.map((_, i) => i).sort((a, b) => key(P[a]) - key(P[b]) || sq[a] - sq[b]);
+    return [ids.map(i => P[i]), ids.map(i => sq[i])];
   }
-  const ready = doneKey === key;
-  $('rload').hidden = ready; $('rbody').hidden = !ready;
-  if (ready) return rdraw();
-  const history = G.history({verbose: true});
-  analysing = true; $('rbar').style.width = '0'; $('rretry').hidden = true;
-  $('rstat').textContent = 'Готовлю отчёт… В первый раз это дольше';
-  const failed = () => {
-    analysing = false; $('rstat').textContent = 'Не получилось разобрать партию. Проверь интернет и повтори.';
-    $('rretry').hidden = false;
+  const insufficient = P => P.length === 2 || (P.length === 3 && P.some(p => p.t === 'B' || p.t === 'N'));
+  const DRAW = {w: 0, d: 0};
+  const TABLES = new Map();
+  let progress = null;
+  // оценка для стороны, чей ход: w = 1 выигрыш, 0 ничья, -1 проигрыш; d = полуходов до мата
+  function probe(P0, sq0, stm) {
+    if (insufficient(P0)) return DRAW;
+    const [P, sq] = order(P0, sq0), T = table(P, sq);
+    const v = T.val[T.index(sq, stm)];
+    if (v === 0 || v === 255) return DRAW;
+    return {w: (v - 1) % 2 ? 1 : -1, d: v - 1};
+  }
+  // оценка хода, который меняет набор фигур (взятие или превращение)
+  function external(P, sq, stm, promo) {
+    if (insufficient(P)) return DRAW;
+    if (!promo || P.length <= 3) return probe(P, sq, stm);
+    // превращение при четырёх фигурах: сначала смотрим, можно ли сразу забрать новую фигуру
+    const mine = P.findIndex(p => p.c !== stm && p.t === promo);
+    let best = null, moves = 0;
+    gen(P, sq, stm, (i, to, cap) => {
+      moves++;
+      if (cap !== mine) return;
+      const [nP, nS] = apply(P, sq, i, to, cap, '');
+      const r = external(nP, nS, 1 - stm, '');
+      const mineR = {w: -r.w, d: r.w ? r.d + 1 : 0};
+      if (!best || mineR.w > best.w) best = mineR;
+    });
+    if (!moves) return attacked(P, sq, sq[kingOf(P, stm)], 1 - stm, -1) ? {w: -1, d: 0} : DRAW; // мат или пат сразу
+    if (best && best.w >= 0) return best;
+    const other = P.reduce((n, p) => p.c === stm ? n + VAL[p.t] : n, 0);
+    return VAL[promo] > other ? {w: -1, d: 40} : DRAW;
+  }
+  function table(P, sq) {
+    const pawn = P[0].t === 'P';
+    const key = P.map(p => p.c + p.t).join('') + (pawn ? file(sq[0]) : '');
+    let T = TABLES.get(key);
+    if (T) return T;
+    const n = P.length, pf = pawn ? file(sq[0]) : 0;
+    // без пешек доска симметрична: первый король только в треугольнике из 10 клеток
+    const region = [], rid = new Int8Array(64).fill(-1);
+    for (let s = 0; s < 64; s++) if (pawn ? file(s) === pf && rank(s) >= 1 && rank(s) <= 6 : file(s) <= 3 && rank(s) <= file(s)) { rid[s] = region.length; region.push(s); }
+    const maps = [];
+    for (let t = 0; t < (pawn ? 1 : 8); t++) maps.push(Uint8Array.from({length: 64}, (_, s) => {
+      let f = file(s), r = rank(s);
+      if (t & 1) f = 7 - f;
+      if (t & 2) r = 7 - r;
+      if (t & 4) [f, r] = [r, f];
+      return r * 8 + f;
+    }));
+    const good = Array.from({length: 64}, (_, s) => maps.filter(m => rid[m[s]] >= 0));
+    const twins = n === 4 && P[2].t === P[3].t && P[2].c === P[3].c;
+    function index(s, stm) {
+      let best = -1;
+      for (const m of good[s[0]]) {
+        let x = rid[m[s[0]]];
+        if (twins) {
+          const a = m[s[2]], b = m[s[3]];
+          x = ((x * 64 + m[s[1]]) * 64 + Math.min(a, b)) * 64 + Math.max(a, b);
+        } else for (let k = 1; k < n; k++) x = x * 64 + m[s[k]];
+        if (best < 0 || x < best) best = x;
+      }
+      return best * 2 + stm;
+    }
+    const size = region.length * Math.pow(64, n - 1) * 2;
+    const val = new Uint8Array(size).fill(255), cnt = new Uint8Array(size), ext = new Uint8Array(size), keep = new Uint8Array(size);
+    T = {val, index};
+    const buckets = Array.from({length: 256}, () => []);
+    const s = new Array(n);
+    const decode = idx => {
+      let x = idx >> 1;
+      for (let k = n - 1; k > 0; k--) { s[k] = x & 63; x >>= 6; }
+      s[0] = region[x];
+    };
+    const kings = [kingOf(P, 0), kingOf(P, 1)];
+    const seen = [];
+    for (let idx = 0; idx < size; idx++) {
+      if (progress && !(idx & 0x3ffff)) progress(idx / size * 0.6);
+      decode(idx);
+      const stm = idx & 1;
+      let clash = false;
+      for (let a = 0; a < n; a++) for (let b = a + 1; b < n; b++) if (s[a] === s[b]) clash = true;
+      if (clash || index(s, stm) !== idx || attacked(P, s, s[kings[1 - stm]], stm, -1)) continue;
+      val[idx] = 0;
+      let moves = 0, win = 0, worst = 0, safe = 0;
+      seen.length = 0;
+      gen(P, s, stm, (i, to, cap, promo) => {
+        moves++;
+        if (cap >= 0 || promo) {
+          const [nP, nS] = apply(P, s, i, to, cap, promo);
+          const r = external(nP, nS, 1 - stm, promo);
+          if (r.w < 0) { if (!win || r.d + 1 < win) win = r.d + 1; }
+          else if (r.w === 0) safe = 1;
+          else worst = Math.max(worst, r.d);
+          return;
+        }
+        const old = s[i];
+        s[i] = to;
+        const c = index(s, 1 - stm);
+        s[i] = old;
+        if (!seen.includes(c)) seen.push(c);
+      });
+      cnt[idx] = seen.length; ext[idx] = worst; keep[idx] = safe || win ? 1 : 0;
+      if (!moves) { if (attacked(P, s, s[kings[stm]], 1 - stm, -1)) buckets[0].push(idx); else keep[idx] = 1; continue; }
+      if (win) buckets[Math.min(win, 253)].push(idx);
+      else if (!seen.length && !safe) buckets[Math.min(worst + 1, 253)].push(idx);
+    }
+    const preds = [];
+    for (let d = 0; d < 254; d++) {
+      if (progress) progress(0.6 + Math.min(d / 70, 1) * 0.4);
+      const list = buckets[d];
+      for (let q = 0; q < list.length; q++) {
+        const idx = list[q];
+        if (val[idx] !== 0) continue;
+        val[idx] = d + 1;
+        decode(idx);
+        const mover = 1 - (idx & 1);
+        preds.length = 0;
+        const back = (i, from) => {
+          const old = s[i];
+          s[i] = from;
+          const p = index(s, mover);
+          s[i] = old;
+          if (val[p] === 0 && !preds.includes(p)) preds.push(p);
+        };
+        for (let i = 0; i < n; i++) {
+          if (P[i].c !== mover) continue;
+          const a = s[i];
+          if (P[i].t === 'P') {
+            const step = mover ? 8 : -8, from = a + step;
+            if (rank(from) >= 1 && rank(from) <= 6 && at(s, from) < 0) {
+              back(i, from);
+              if (rank(a) === (mover ? 4 : 3) && at(s, from + step) < 0) back(i, from + step);
+            }
+            continue;
+          }
+          for (const ray of STEPS[P[i].t][a]) for (const from of ray) { if (at(s, from) >= 0) break; back(i, from); }
+        }
+        for (const p of preds) {
+          if (d % 2 === 0) buckets[d + 1].push(p); // отсюда можно перейти в проигранную для соперника
+          else if (--cnt[p] === 0 && !keep[p]) buckets[Math.min(Math.max(d, ext[p]) + 1, 253)].push(p);
+        }
+      }
+      buckets[d] = null;
+    }
+    TABLES.set(key, T);
+    return T;
+  }
+  const NAME = s => 'abcdefgh'[file(s)] + (rank(s) + 1);
+  function parse(fen) {
+    const [board, turn] = fen.split(' '), P = [], sq = [];
+    board.split('/').forEach((row, i) => {
+      let f = 0;
+      for (const ch of row) {
+        if (ch >= '1' && ch <= '8') { f += +ch; continue; }
+        P.push({c: ch === ch.toUpperCase() ? 0 : 1, t: ch.toUpperCase()}); sq.push((7 - i) * 8 + f++);
+      }
+    });
+    return {P, sq, stm: turn === 'b' ? 1 : 0};
+  }
+  const check = pos => attacked(pos.P, pos.sq, pos.sq[kingOf(pos.P, pos.stm)], 1 - pos.stm, -1);
+  // все ходы позиции с оценкой для того, кто ходит
+  function analyse(pos) {
+    const {P, stm} = pos, sq = pos.sq.slice(), moves = [];
+    gen(P, sq, stm, (i, to, cap, promo) => {
+      const [nP, nS] = apply(P, sq, i, to, cap, promo);
+      const next = {P: nP, sq: nS, stm: 1 - stm};
+      const r = cap >= 0 || promo ? external(nP, nS, 1 - stm, promo) : probe(nP, nS, 1 - stm);
+      let replies = 0;
+      gen(nP, nS.slice(), 1 - stm, () => replies++);
+      const inCheck = check(next);
+      moves.push({from: NAME(sq[i]), to: NAME(to), piece: P[i].t, promo, capture: cap >= 0 ? P[cap].t : '', next,
+        w: -r.w, d: r.w ? r.d + 1 : 0, mate: !replies && inCheck, stale: !replies && !inCheck, dead: insufficient(nP)});
+    });
+    return {check: check(pos), moves};
+  }
+  // самые сильные ходы: быстрее выиграть, держать ничью, дольше сопротивляться
+  function best(list) {
+    const score = m => m.mate ? 2000 : m.w > 0 ? 1000 - m.d : m.w === 0 ? 500 : m.d;
+    const top = Math.max(...list.map(score));
+    return list.filter(m => score(m) === top);
+  }
+  // ход соперника: в ничейной позиции выбирает тот, после которого проще всего ошибиться
+  function reply(pos) {
+    let list = best(analyse(pos).moves);
+    if (!list.length) return null;
+    if (list[0].w === 0) {
+      const rated = list.map(m => {
+        const safe = analyse(m.next).moves.filter(x => x.w >= 0).length;
+        return [m, safe - (m.piece === 'P' ? 1.5 : 0) - (m.capture ? 20 : 0)];
+      });
+      const low = Math.min(...rated.map(x => x[1]));
+      list = rated.filter(x => x[1] === low).map(x => x[0]);
+    }
+    return list[Math.floor(Math.random() * list.length)];
+  }
+  return {parse, analyse, reply, best, probe, NAME, clear: () => TABLES.clear(), onProgress: f => { progress = f; }};
+}
+function EGHandle(E, msg) {
+  const {id, pos, fen, opponent} = msg;
+  if (fen && fen !== E.last) { E.clear(); E.last = fen; } // таблицы прошлого задания не занимают память
+  const start = fen ? E.parse(fen) : pos;
+  if (!opponent) return {id, info: E.analyse(start), pos: start};
+  const m = E.reply(start);
+  return {id, move: m, info: m && E.analyse(m.next), pos: m && m.next};
+}
+function EGWorker() {
+  const E = EGCore();
+  onmessage = ev => {
+    const {id} = ev.data;
+    try {
+      E.onProgress(p => postMessage({id, progress: p}));
+      postMessage(EGHandle(E, ev.data));
+    } catch (e) { postMessage({id, error: String(e)}); }
   };
-  const engine = await loadEngine();
-  if (token !== rtoken) return;
-  if (!engine) return failed();
-  const positions = [new Chess()];
-  for (const m of history) {
-    const g = new Chess(positions[positions.length - 1].fen());
-    g.move({from: m.from, to: m.to, promotion: m.promotion});
-    positions.push(g);
-  }
-  const evals = [];
-  try {
-    await ask(engine, ['ucinewgame', 'isready'], 'readyok', 20000);
-    for (let i = 0; i < positions.length; i++) {
-      if (token !== rtoken) return;
-      $('rstat').textContent = `Разбираю партию: ${i + 1} из ${positions.length}`;
-      $('rbar').style.width = (i + 1) / positions.length * 100 + '%';
-      evals.push(await analyse(new Chess(positions[i].fen()), engine));
+}
+
+// ---- Обучение: списки и доска ----
+const SECTIONS = { // задания приходят с сервера только подписчикам
+  m: {title: 'Миттельшпиль', list: null, about: 'Середина игры: фигуры уже выведены, начинается борьба планов. Главное: контроль центра, активные фигуры, безопасный король, открытые линии и слабости соперника. Соперник отвечает на каждый твой ход.'},
+  e: {title: 'Эндшпиль', list: null, about: 'Окончание: фигур мало, и каждый ход на счету. Король становится сильной фигурой, а пешки идут в ферзи. Соперник защищается без ошибок, поэтому выиграть можно только точной игрой.'}
+};
+const egBest = EGCore().best;
+let D = {sec: 'm', i: 0, token: 0}, dtimer, egWorker = null, egSeq = 0;
+const egWait = new Map();
+function dstop() {
+  clearTimeout(dtimer); D.token++;
+  if (egWait.size) { egWait.clear(); egStop(); } // брошенный расчёт не должен задерживать следующий
+}
+// расчёт эндшпиля идёт в фоновом потоке, чтобы экран не зависал
+let egLocal = null, egWatch;
+function egStop() {
+  clearTimeout(egWatch);
+  if (egWorker) egWorker.terminate();
+  egWorker = null;
+}
+function egBroken(reason) {
+  const list = [...egWait.values()];
+  egWait.clear(); egStop();
+  list.forEach(w => w.rej(new Error(reason)));
+}
+function egAlive() {
+  clearTimeout(egWatch);
+  if (egWait.size) egWatch = setTimeout(() => egBroken('нет ответа'), 90000);
+}
+function egBackground(msg, onProgress) {
+  return new Promise((res, rej) => {
+    if (!egWorker) {
+      const src = EGCore.toString() + ';' + EGHandle.toString() + ';(' + EGWorker.toString() + ')()';
+      egWorker = new Worker(URL.createObjectURL(new Blob([src], {type: 'text/javascript'})));
+      egWorker.onmessage = e => {
+        const w = egWait.get(e.data.id);
+        if (w && e.data.progress !== undefined) { egAlive(); return w.progress && w.progress(e.data.progress); }
+        if (!w) return egAlive();
+        egWait.delete(e.data.id); egAlive();
+        e.data.error ? w.rej(new Error(e.data.error)) : w.res(e.data);
+      };
+      egWorker.onerror = e => egBroken(e.message || 'фоновый расчёт недоступен');
     }
-  } catch (e) {
-    if (token !== rtoken) return;
-    engine.terminate(); sf = null;
-    return failed();
-  }
-  if (token !== rtoken) return;
-  items = [];
-  history.forEach((m, i) => {
-    if (m.color !== 'w') return; // разбираем ходы игрока
-    const before = positions[i], after = positions[i + 1];
-    const best = find(before, evals[i].best), reply = find(after, evals[i + 1].best);
-    const mine = after.in_checkmate() ? 10000 : -evals[i + 1].score;
-    const drop = Math.max(0, chance(evals[i].score) - chance(mine));
-    const isBest = after.in_checkmate() || (best && best.from === m.from && best.to === m.to && best.promotion === m.promotion);
-    const kind = isBest ? 'best' : drop < 2 ? 'great' : drop < 5 ? 'good' : drop < 10 ? 'soft' : drop < 20 ? 'bad' : 'blunder';
-    const acc = isBest ? 100 : Math.max(0, Math.min(100, 103.17 * Math.exp(-0.04354 * drop) - 3.17));
-    const why = [];
-    if (after.in_checkmate()) why.push('Это мат!');
-    else if (kind === 'best') why.push(m.captured ? `Ты взял ${NAMES[m.captured]}, и это сильнейший ход.` : 'Сильнейший ход в этой позиции.');
-    else if (kind === 'great') why.push('Отличный ход, почти не уступает лучшему.');
-    else if (kind === 'good') why.push('Крепкий ход, позиция почти не ухудшилась.');
-    else {
-      if (evals[i].score >= 9000 && mine < 9000) why.push('Здесь был форсированный мат, и он упущен.');
-      if (evals[i + 1].score >= 9000 && evals[i].score > -9000) why.push('Теперь соперник может поставить мат.');
-      if (reply && reply.captured) why.push(`Соперник может взять ${NAMES[reply.captured]} на ${reply.to} (${ru(reply.san)}).`);
-      if (best && best.captured) why.push(`Можно было взять ${NAMES[best.captured]} на ${best.to}.`);
-    }
-    if (best && !isBest) why.push(`Сильнее: ${ru(best.san)} (зелёная стрелка).`);
-    items.push({score: after.in_checkmate() ? null : evals[i + 1].score, fen: before.fen(), move: m, best: isBest ? null : best, kind, acc, ply: i, num: Math.floor(i / 2) + 1, why: why.join('\n')});
+    const id = ++egSeq;
+    egWait.set(id, {res, rej, progress: onProgress});
+    egWorker.postMessage({id, ...msg}); egAlive();
   });
-  // шансы белых после каждого полухода для графика
-  graph = positions.map((p, i) => chance(p.turn() === 'w' ? evals[i].score : -evals[i].score));
-  analysing = false; doneKey = key;
-  summary();
-  $('rload').hidden = true; $('rbody').hidden = false;
-  // начинаем с первой ошибки
-  ri = Math.max(0, items.findIndex(x => x.kind === 'bad' || x.kind === 'blunder'));
-  rdraw();
 }
-function summary() {
-  const acc = items.length ? Math.round(items.reduce((n, x) => n + x.acc, 0) / items.length) : 0;
-  $('racc').textContent = items.length ? acc + '%' : '—';
-  $('rring').style.setProperty('--p', acc + '%');
-  $('rnote').textContent = `Лучших и отличных ходов: ${items.filter(x => x.kind === 'best' || x.kind === 'great').length} из ${items.length}`;
-  $('rretry').hidden = true;
-  $('rkinds').innerHTML = Object.entries(KINDS).map(([k, v]) =>
-    `<button class="kind" data-k="${k}" style="--c:${v[2]}"><b>${items.filter(x => x.kind === k).length}</b><span>${v[1]}</span></button>`).join('');
-  $('rmoves').innerHTML = items.map((x, i) =>
-    `<button data-i="${i}" style="--c:${KINDS[x.kind][2]}">${x.num}. ${ru(x.move.san)} ${KINDS[x.kind][0]}</button>`).join('');
-}
-function drawGraph() {
-  const n = Math.max(1, graph.length - 1), x = i => i / n * 100, y = v => 100 - v;
-  const pts = graph.map((v, i) => `${x(i)},${y(v)}`).join(' ');
-  const cur = items[ri] ? x(items[ri].ply + 1) : 0;
-  $('rgraph').innerHTML = `<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon fill="#eef0f6" points="0,100 ${pts} 100,100"/>` +
-    `<line x1="0" x2="100" y1="50" y2="50" stroke="#8b8fa3" stroke-width="1" vector-effect="non-scaling-stroke" stroke-dasharray="4"/>` +
-    `<line x1="${cur}" x2="${cur}" y1="0" y2="100" stroke="#e5484d" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`;
-}
-function arrow(m, color) {
-  const pt = s => [s.charCodeAt(0) - 97 + .5, 8.5 - s[1]];
-  const [x1, y1] = pt(m.from), [x2, y2] = pt(m.to);
-  const len = Math.hypot(x2 - x1, y2 - y1), ux = (x2 - x1) / len, uy = (y2 - y1) / len;
-  const bx = x2 - ux * .42, by = y2 - uy * .42;
-  return `<g fill="${color}" stroke="${color}" opacity=".85"><line x1="${x1}" y1="${y1}" x2="${bx}" y2="${by}" stroke-width=".17" stroke-linecap="round"/>` +
-    `<polygon stroke="none" points="${x2},${y2} ${bx - uy * .28},${by + ux * .28} ${bx + uy * .28},${by - ux * .28}"/></g>`;
-}
-function rdraw() {
-  const x = items[ri];
-  if (!x) return;
-  const g = new Chess(x.fen), kind = KINDS[x.kind];
-  paint($('rb'), sq => g.get(sq), null, [], [x.move.from, x.move.to], false, checkSq(g));
-  $('rb').insertAdjacentHTML('beforeend', `<svg class="arrows" viewBox="0 0 8 8">${arrow(x.move, kind[2])}${x.best ? arrow(x.best, '#15a34a') : ''}</svg>`);
-  $('rtext').style.setProperty('--c', kind[2]);
-  $('rtext').textContent = x.why;
-  // значок оценки на клетке, куда сделан ход
-  const cell = $('rb').querySelector(`[data-sq=${x.move.to}]`);
-  if (cell) cell.insertAdjacentHTML('beforeend', `<em class="badge" style="background:${kind[2]}">${kind[0]}</em>`);
-  // оценка после хода, с точки зрения белых (счёт движка дан для чёрных)
-  const s = x.score === null ? '' : Math.abs(x.score) >= 9000 ? (x.score < 0 ? ' · мат за тебя' : ' · мат за бота') : ' · оценка ' + (-x.score > 0 ? '+' : '') + (-x.score / 100).toFixed(1);
-  const head = document.createElement('b');
-  head.textContent = `${x.num}. ${ru(x.move.san)} ${kind[0]} ${kind[1]}${s}`;
-  $('rtext').prepend(head);
-  $('rprev').disabled = ri === 0; $('rnext').disabled = ri === items.length - 1;
-  [...$('rmoves').children].forEach((b, i) => { b.className = i === ri ? '' : 'alt'; });
-  const on = $('rmoves').children[ri];
-  if (on) $('rmoves').scrollLeft = on.offsetLeft - $('rmoves').offsetLeft - $('rmoves').clientWidth / 2 + on.clientWidth / 2;
-  drawGraph();
-}
-$('rclose').addEventListener('click', closeReview);
-$('rnew').addEventListener('click', () => { closeReview(); newGame(); });
-$('rretry').addEventListener('click', () => { doneKey = ''; openReview(); });
-$('rkinds').addEventListener('click', e => { // нажатие на категорию перебирает такие ходы
-  const b = e.target.closest('.kind');
-  if (!b) return;
-  for (let n = 1; n <= items.length; n++) {
-    const i = (ri + n) % items.length;
-    if (items[i].kind === b.dataset.k) { ri = i; return rdraw(); }
+// если фоновый поток на телефоне не работает, считаем прямо на экране
+async function egAsk(msg, onProgress) {
+  const token = D.token;
+  if (!egLocal) {
+    try { return await egBackground(msg, onProgress); }
+    catch (e) {
+      if (token !== D.token) throw e;
+      egStop(); egLocal = EGCore();
+    }
   }
+  $('dStatus').textContent = 'Считаю… экран может ненадолго замереть';
+  await new Promise(r => setTimeout(r, 60));
+  if (token !== D.token) throw new Error('отменено');
+  return EGHandle(egLocal, msg);
+}
+const mark = (sec, i) => (sec === 'm' ? 'n' : 'e') + i;
+function trainCounts() {
+  for (const [sec, id] of [['m', 'midCount'], ['e', 'endCount']]) {
+    const done = Object.keys(S.train || {}).filter(k => k[0] === mark(sec, '')).length;
+    $(id).textContent = done ? 'Пройдено: ' + done : sec === 'm' ? 'Планы и атаки' : 'Окончания';
+  }
+}
+async function openTrain(sec) {
+  stopTimers();
+  if (!SECTIONS[sec].list) {
+    D.sec = sec; show('train');
+    $('trTitle').textContent = SECTIONS[sec].title; $('trAbout').textContent = SECTIONS[sec].about; $('trList').textContent = 'Загружаю…';
+    const token = D.token;
+    try {
+      const d = await api('training');
+      showAccess(d.access);
+      if (token !== D.token || $('train').hidden || D.sec !== sec) return;
+      if (!d.mid) return openLock('Миттельшпиль и эндшпиль открываются по подписке.');
+      SECTIONS.m.list = d.mid; SECTIONS.e.list = d.end;
+    } catch (e) { if (token === D.token) $('trList').textContent = apiError(e); return; }
+  }
+  trainList(sec);
+}
+function trainList(sec) {
+  const x = SECTIONS[sec];
+  D.sec = sec; show('train');
+  $('trTitle').textContent = x.title; $('trAbout').textContent = x.about;
+  let group = '';
+  $('trList').innerHTML = x.list.map((t, i) => {
+    const head = t.g && t.g !== group ? `<div class="grp">${group = t.g}</div>` : '';
+    return head + `<button class="alt card" data-i="${i}">${lessonIcon(t.i)}<div>${t.t}</div><em>${S.train && S.train[mark(sec, i)] ? '✅' : '›'}</em></button>`;
+  }).join('');
+}
+function openDrill(i) {
+  dstop();
+  const sec = D.sec, task = SECTIONS[sec].list[i];
+  D = {sec, i, task, token: D.token, sel: null, last: null, hint: null, busy: false, done: false, step: 0, history: [], info: null, pos: null, g: null, made: 0};
+  show('drill');
+  $('dTitle').textContent = task.t; $('dText').textContent = task.p;
+  $('dUndo').hidden = sec === 'm'; $('dNext').hidden = true; $('dBarBox').hidden = true; $('promo').hidden = true;
+  if (sec === 'm') { D.g = new Chess(task.fen); ddraw(); dsay(); return; }
+  D.busy = true; ddraw();
+  $('dStatus').textContent = 'Готовлю соперника…'; $('dBarBox').hidden = false; $('dBar').style.width = '0';
+  const token = D.token;
+  egAsk({fen: task.fen}, p => {
+    if (token !== D.token) return;
+    $('dBar').style.width = p * 100 + '%'; $('dStatus').textContent = 'Готовлю соперника… Сложные позиции считаются до минуты';
+  }).then(r => {
+    if (token !== D.token) return;
+    D.pos = r.pos; D.info = r.info; D.busy = false; $('dBarBox').hidden = true; ddraw(); dsay();
+  }).catch(e => dfail(token, e));
+}
+function dfail(token, e) {
+  if (token !== D.token) return;
+  $('dBarBox').hidden = true; D.busy = true;
+  $('dStatus').textContent = 'Ошибка: ' + String(e && e.message || e).slice(0, 120) + '. Нажми «Заново»';
+}
+function dget(sq) {
+  if (D.sec === 'm') return D.g.get(sq);
+  const pos = D.pos || null;
+  if (!pos) return fenPiece(D.task.fen, sq);
+  const k = pos.sq.indexOf('abcdefgh'.indexOf(sq[0]) + 8 * (sq[1] - 1));
+  return k < 0 ? null : {type: pos.P[k].t.toLowerCase(), color: pos.P[k].c ? 'b' : 'w'};
+}
+// фигуры из FEN, пока позиция ещё считается
+function fenPiece(fen, sq) {
+  let row = fen.split(' ')[0].split('/')[8 - sq[1]], f = 'abcdefgh'.indexOf(sq[0]);
+  for (const ch of row) {
+    if (ch >= '1' && ch <= '8') { f -= +ch; if (f < 0) return null; continue; }
+    if (f-- === 0) return {type: ch.toLowerCase(), color: ch === ch.toUpperCase() ? 'w' : 'b'};
+  }
+  return null;
+}
+function dmoves(from) {
+  if (D.sec === 'm') return D.g.moves({square: from, verbose: true});
+  return D.info ? D.info.moves.filter(m => m.from === from) : [];
+}
+function ddraw() {
+  const check = D.sec === 'm' ? checkSq(D.g) : D.info && D.info.check && !D.done ? 'abcdefgh'.split('').flatMap(f => [1,2,3,4,5,6,7,8].map(r => f + r)).find(s => { const p = dget(s); return p && p.type === 'k' && p.color === 'w'; }) : null;
+  paint($('db'), dget, D.sel, D.hint || (D.sel ? dmoves(D.sel).map(m => m.to) : []), D.hint || D.last, false, check);
+}
+// подсказка под доской перед ходом игрока
+function dsay(prefix) {
+  const t = D.task;
+  let text;
+  if (D.sec === 'm') text = `Ход ${D.step + 1} из ${t.steps.length}. ${t.steps[D.step].say}`;
+  else if (t.goal === 'draw') text = `Удержи ничью: ход ${D.made + 1} из 12`;
+  else {
+    const win = D.info.moves.filter(m => m.w > 0);
+    const n = win.length ? Math.ceil(Math.min(...win.map(m => m.d)) / 2) : 0;
+    text = t.goal === 'mate' && n ? `Твой ход. При точной игре мат в ${n}` : 'Твой ход. Проведи пешку в ферзи';
+  }
+  $('dStatus').textContent = (prefix ? prefix + ' ' : '') + text;
+}
+function dwin(text) {
+  D.done = true; D.busy = false; D.sel = D.hint = null; buzz(true);
+  S.train = {...S.train, [mark(D.sec, D.i)]: 1}; save();
+  ddraw(); $('dStatus').textContent = '✅ ' + text;
+  $('dNext').hidden = D.i + 1 >= SECTIONS[D.sec].list.length;
+}
+$('db').addEventListener('click', e => {
+  const el = e.target.closest('.sq');
+  if (!el || D.busy || D.done) return;
+  const sq = el.dataset.sq;
+  const list = D.sel ? dmoves(D.sel).filter(m => m.to === sq) : [];
+  if (!list.length) {
+    const p = dget(sq);
+    D.sel = p && p.color === 'w' && sq !== D.sel ? sq : null;
+    D.hint = null; return ddraw();
+  }
+  const from = D.sel; D.sel = D.hint = null;
+  if (D.sec === 'm') return midMove(from, sq);
+  if (list.length === 1) return endMove(list[0]);
+  // выбор фигуры для превращения
+  const row = $('promo').querySelector('.row'), token = D.token;
+  row.innerHTML = '';
+  for (const m of list) {
+    const b = document.createElement('button');
+    b.className = 'alt'; b.innerHTML = piece(m.promo.toLowerCase(), 'w');
+    b.onclick = () => { $('promo').hidden = true; if (token === D.token) endMove(m); };
+    row.appendChild(b);
+  }
+  $('promo').hidden = false;
 });
-$('rgraph').addEventListener('click', e => {
-  if (!items.length) return;
-  const r = $('rgraph').getBoundingClientRect(), ply = (e.clientX - r.left) / r.width * (graph.length - 1) - 1;
-  ri = items.reduce((best, x, i) => Math.abs(x.ply - ply) < Math.abs(items[best].ply - ply) ? i : best, 0); rdraw();
+function midMove(from, to) {
+  const step = D.task.steps[D.step], key = from + to, token = D.token;
+  D.g.move({from, to, promotion: 'q'});
+  const before = D.last; D.last = [from, to]; D.busy = true; ddraw();
+  if (D.g.in_checkmate()) return dwin(D.task.ok);
+  if (!(key in step.m)) {
+    buzz(false); $('dStatus').textContent = 'Для этого плана есть ход лучше. Попробуй ещё';
+    dtimer = setTimeout(() => { if (token !== D.token) return; D.g.undo(); D.last = before; D.busy = false; ddraw(); dsay(); }, 1300);
+    return;
+  }
+  buzz(true);
+  const r = step.m[key];
+  if (!r) return dwin(D.task.ok);
+  $('dStatus').textContent = '✅ Верно! Отвечает соперник…';
+  dtimer = setTimeout(() => {
+    if (token !== D.token) return;
+    D.g.move({from: r.slice(0, 2), to: r.slice(2, 4), promotion: 'q'});
+    D.last = [r.slice(0, 2), r.slice(2, 4)];
+    if (++D.step >= D.task.steps.length) return dwin(D.task.ok);
+    D.busy = false; ddraw(); dsay();
+  }, 800);
+}
+function endMove(m) {
+  const goal = D.task.goal, token = D.token;
+  const saved = {pos: D.pos, info: D.info, last: D.last, made: D.made};
+  D.pos = m.next; D.last = [m.from, m.to]; D.busy = true; D.info = null; D.made++; ddraw();
+  const lost = m.w < (goal === 'draw' ? 0 : 1);
+  if (lost) {
+    buzz(false);
+    $('dStatus').textContent = m.stale ? 'Пат! Это ничья. Возвращаю ход' : goal === 'draw' ? 'Так ничью не удержать. Возвращаю ход' : 'Так уже не выиграть. Возвращаю ход';
+    dtimer = setTimeout(() => { if (token !== D.token) return; Object.assign(D, saved, {busy: false}); ddraw(); dsay(); }, 1700);
+    return;
+  }
+  D.history.push(saved);
+  if (m.mate) return dwin('Мат! Задание выполнено');
+  if (goal === 'promote' && m.promo) return dwin('Пешка прошла в ферзи, дальше победа!');
+  if (goal === 'draw' && (m.stale || !m.next.P.some(p => p.t === 'P'))) return dwin(m.stale ? 'Пат: ничья удержана!' : 'Пешка уничтожена: ничья!');
+  $('dStatus').textContent = 'Соперник думает…';
+  const started = Date.now();
+  egAsk({pos: m.next, opponent: true}).then(r => {
+    if (token !== D.token) return;
+    dtimer = setTimeout(() => {
+      if (token !== D.token) return;
+      const x = r.move;
+      D.pos = r.pos; D.info = r.info; D.last = [x.from, x.to];
+      if (goal === 'draw' && (x.stale || x.dead)) return dwin('Ничья удержана!');
+      if (goal === 'draw' && D.made >= 12) return dwin('Ты продержался 12 ходов: ничья удержана!');
+      D.busy = false; ddraw(); dsay(x.promo ? 'Соперник превратил пешку.' : '');
+    }, Math.max(0, 600 - (Date.now() - started)));
+  }).catch(e => dfail(token, e));
+}
+$('dUndo').addEventListener('click', () => {
+  if (!D.history.length || (D.busy && !D.done)) return;
+  dstop(); $('promo').hidden = true;
+  Object.assign(D, D.history.pop(), {busy: false, done: false, sel: null, hint: null});
+  $('dNext').hidden = true; ddraw(); dsay();
 });
-$('report').addEventListener('click', openReview);
-$('rprev').addEventListener('click', () => { ri--; rdraw(); });
-$('rnext').addEventListener('click', () => { ri++; rdraw(); });
-$('rmoves').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { ri = +b.dataset.i; rdraw(); } });
+$('dHint').addEventListener('click', () => {
+  if (D.busy || D.done) return;
+  let m;
+  if (D.sec === 'm') {
+    const u = Object.keys(D.task.steps[D.step].m).find(k => D.g.moves({square: k.slice(0, 2), verbose: true}).some(x => x.to === k.slice(2, 4)));
+    if (u) m = {from: u.slice(0, 2), to: u.slice(2, 4)};
+  } else {
+    const good = egBest(D.info.moves);
+    m = good.find(x => x.capture) || good[0];
+  }
+  if (!m) return;
+  D.sel = null; D.hint = [m.from, m.to]; ddraw();
+});
+$('dAgain').addEventListener('click', () => openDrill(D.i));
+$('dNext').addEventListener('click', () => openDrill(D.i + 1));
+$('trList').addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (b) openDrill(+b.dataset.i); });
+$('mMid').addEventListener('click', () => openTrain('m'));
+$('mEnd').addEventListener('click', () => openTrain('e'));
 
 // ---- Дебюты ----
 let OPENINGS = []; // приходят с сервера только подписчикам
@@ -1148,7 +1505,7 @@ function drawOpenings() {
   let group = '';
   $('olist').innerHTML = list.map(([o, i]) => {
     const head = o[0] !== group ? `<div class="grp">${group = o[0]}</div>` : '';
-    return head + `<button class="alt card" data-i="${i}"><i>${o[2] === 'w' ? '♔' : '♚'}</i><div>${o[1]}<small>${o[2] === 'w' ? 'Выбирают белые' : 'Выбирают чёрные'}</small></div><em>${S.open[i] ? '✅' : '›'}</em></button>`;
+    return head + `<button class="alt card" data-i="${i}"><i>${piece('k', o[2])}</i><div>${o[1]}<small>${o[2] === 'w' ? 'Выбирают белые' : 'Выбирают чёрные'}</small></div><em>${S.open[i] ? '✅' : '›'}</em></button>`;
   }).join('');
 }
 $('okind').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { okind = +b.dataset.k; drawOpenings(); } });
@@ -1237,7 +1594,6 @@ async function toBot() {
   try { tg.close(); } catch (e) {}
 }
 $('tobot').addEventListener('click', toBot);
-$('rpro').addEventListener('click', toBot);
 
 // ---- Таблица лидеров ----
 let ttoken = 0;
@@ -1274,13 +1630,14 @@ $('mLes').addEventListener('click', lessonList);
 $('nav').addEventListener('click', e => {
   const b = e.target.closest('button');
   if (!b) return;
-  clearTimeout(ttimer); clearTimeout(otimer);
+  stopTimers();
   ({home, app: puzzles, play: () => openPlay(), lessons: lessonList, openings: openingList})[b.dataset.n]();
 });
+function stopTimers() { clearTimeout(ttimer); clearTimeout(otimer); dstop(); }
 function back() {
-  clearTimeout(ttimer); clearTimeout(otimer);
+  stopTimers();
+  if (!$('drill').hidden) return trainList(D.sec);
   if (!$('opening').hidden) return openingList();
-  if (!$('review').hidden) return closeReview();
   if (!$('lesson').hidden && !course) lessonList(); else home();
 }
 document.querySelectorAll('.back').forEach(b => b.addEventListener('click', back));
@@ -1290,7 +1647,7 @@ try { tg.BackButton.onClick(back); } catch (e) {}
   if (v) { try { S = Object.assign(S, JSON.parse(v)); } catch (e) {} }
   stats();
   // кнопки меню в чате открывают приложение с ?s=раздел; новичок сначала видит приветствие
-  const goto = {play: () => openPlay(), puzzles, lessons: lessonList, openings: openingList, top: openTop};
+  const goto = {play: () => openPlay(), puzzles, lessons: lessonList, openings: openingList, top: openTop, middle: () => openTrain('m'), end: () => openTrain('e')};
   const s = new URLSearchParams(location.search).get('s');
   if (!await kv.get(ONB)) show('intro');
   else if (Object.prototype.hasOwnProperty.call(goto, s)) { home(); goto[s](); }
